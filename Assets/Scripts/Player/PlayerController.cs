@@ -66,127 +66,147 @@ public class PlayerController : MonoBehaviour
     // 카메라 제어 함수
     private void CameraControl()
     {
-        vMovePos = Vector3.zero;
+        vMovePos = Vector3.zero; 
+        // 터치가 이동한 좌표를 영벡터로 초기 설정
+
         Touch[] touch = new Touch[3];
+        // Touch 구조체 데이터를 배열로 3개 생성
+        // (터치 1개 - 카메라 회전, 터치 2개 - 카메라 움직임, 터치 3개 - 카메라 줌인, 줌아웃)
+
         bIsCameraControl = true;
+        // 카메라 컨트롤 시 제어 중이라고 설정
 
         // Camera Rotate
-        if(Input.touchCount == 1) 
+        if(Input.touchCount == 1)  // 터치 1개 -> 카메라 회전
         {
-            touch[0] = Input.GetTouch(0);
-            if(touch[0].phase == TouchPhase.Began)
+            touch[0] = Input.GetTouch(0); 
+            // 0번 터치(한 손가락 터치) 값 가져옴
+            if(touch[0].phase == TouchPhase.Began) // 터치를 눌렀을 때(첫 입력 시)
             {
                 vFirstPoint = touch[0].position - touch[0].deltaPosition;
+                // touch[0]의 위치 좌표(position)에서 (가장 마지막 프레임에서 발생했던 위치 좌표와 현재 프레임에서 발생한 터치 위치의 차이)(deltaPosition)를 빼서 FirstPosition로 저장 
+                
                 xAngleTemp = xAngle;
                 yAngleTemp = yAngle * -1.0f;
+                // 마지막까지 저장되었던 x축 각과 y축 각을 각이 변하는 동안 임시로 저장할 temp 변수에 저장
+                // y 각은 negation이 되야 하므로 -1를 곱함.
+                // -1을 곱하지 않으면 아래로 터치를 움직이면 카메라가 위로 올라감 
             }
-            if(touch[0].phase == TouchPhase.Moved)
+
+            if(touch[0].phase == TouchPhase.Moved) // 터치를 움직였을 때
             {
                 vSecondPoint = touch[0].position - touch[0].deltaPosition;
+                // touch[0]의 위치 정보를 vSecondPoint에 저장
+
                 xAngle = xAngleTemp + (vSecondPoint.x - vFirstPoint.x) * 180 / Screen.width;
                 yAngle = (yAngleTemp + (vSecondPoint.y - vFirstPoint.y) * 90 * 3f / Screen.height) * -1.0f;
+                // x축 각과 y축 각을 최초 입력 시 좌표와 이동할 때의 좌표의 차이(벡터)를 스크린 비율에 맞게 변경 후 최종 저장
 
+                // 이 코드는 안 씀
                 var v2 = vFirstPoint - vSecondPoint;
 
+                // 이 코드도 안 씀
                 var newAngle = Mathf.Atan2(v2.y, v2.x);
                 newAngle = newAngle * 180 / Mathf.PI;
 
+                // 이코드도 안 씀
                 if(oldAngle < 0) oldAngle = newAngle;
-
                 var deltaAngle = Mathf.DeltaAngle(newAngle, oldAngle);
-
                 oldAngle = newAngle;
 
                 if(yAngle < 50f) yAngle = 50f;
                 if(yAngle > 105f) yAngle = 105f;
+                // y축 각을 50에서 105도 사이로 조정
 
+                // 이 아래 코드도 미사용
                 Ray ray = Camera.main.ScreenPointToRay(new Vector3(Screen.width / 2, Screen.height / 2, 0));
                 RaycastHit hit;
                 Vector3 position = new Vector3();
-
+                // 이 코드도 미사용
                 if(Physics.Raycast(ray, out hit, fMaxDistance))
                 {
                     position = hit.transform.position;
                 }
                 //PlayerObj.transform.RotateAround(position, Vector3.up, -deltaAngle);
+                // 여기까지 미사용
+
                 PlayerObj.transform.rotation = Quaternion.Euler(yAngle, xAngle, 0.0f);
+                // 카메라의 부모 오브젝트인 Player의 Rotation을 변경
             }
         }
 
         // Camera Move 
-        else if(Input.touchCount == 2) 
+        else if(Input.touchCount == 2) // 터치 2개 -> 카메라 움직이기
         {
             touch[0] = Input.GetTouch(0);
             touch[1] = Input.GetTouch(1);
-            //touch[2] = null;
+            // 0번 터치와 1번 터치에 대한 데이터 저장
 
-            if(touch[0].phase == TouchPhase.Began || touch[1].phase == TouchPhase.Began)
+            if(touch[0].phase == TouchPhase.Began || touch[1].phase == TouchPhase.Began) // 두 터치가 입력될 경우
             {
-                
                 vLastPos = ((touch[0].position - touch[0].deltaPosition) + (touch[1].position - touch[1].deltaPosition)) / 2;
+                // 두 터치 좌표의 중간 값을 LastPos에 저장
             }
-            else if(touch[0].phase == TouchPhase.Moved || touch[1].phase == TouchPhase.Moved)
+
+            else if(touch[0].phase == TouchPhase.Moved || touch[1].phase == TouchPhase.Moved) // 터치가 움직였을 때
             {
                 vCurPos = ((touch[0].position - touch[0].deltaPosition) + (touch[1].position - touch[1].deltaPosition)) / 2;
                 vMovePos = (Vector3)(vLastPos - vCurPos);
+                // 움직인 터치의 좌표의 중간값을 CurPos에 저장한 후 LastPos와의 차이를 MovePos에 저장
                 
                 PlayerObj.transform.Translate(vMovePos * Time.deltaTime * fMoveSpeed);
+                // 카메라의 부모 오브젝트인 Player의 위치를 변경. 속도는 MoveSpeed로 설정
+                
                 vLastPos = ((touch[0].position - touch[0].deltaPosition) + (touch[1].position - touch[1].deltaPosition)) / 2;
+                // LastPos를 최종 위치로 변경시킴
             }
         }
 
         // Camera Zoom-In, Zoom-Out
-        else if(Input.touchCount == 3)
+        else if(Input.touchCount == 3) // 터치 3개 -> 카메라 줌인/줌아웃
         {
             touch[0] = Input.GetTouch(0);
             touch[1] = Input.GetTouch(1);
             touch[2] = Input.GetTouch(2);
-
+            // 각 터치 데이터를 저장
+             
             Vector2[] vTouchLastPosArr = new Vector2[3];
             vTouchLastPosArr[0] = touch[0].position - touch[0].deltaPosition;
             vTouchLastPosArr[1] = touch[1].position - touch[1].deltaPosition;
             vTouchLastPosArr[2] = touch[2].position - touch[2].deltaPosition;
+            // 각 터치에 대한 위치 좌표를 위치 변수에 저장
 
             Vector2 LastVectorOne = vTouchLastPosArr[1] - vTouchLastPosArr[0];
             Vector2 LastVectorTwo = vTouchLastPosArr[2] - vTouchLastPosArr[0];
+            // touch[0]->touch[1] 벡터(u)와 touch[0]->touch[2](v)의 벡터를 구함
             float fLastArea = Mathf.Abs(Vector3.Cross(LastVectorOne, LastVectorTwo).magnitude);
+            // 삼각형 넓이를 구하기 위해 두 벡터 사이의 각을 구하기 위해 외적(Cross Product)을 구함
+            // 외적: |u*v| = |u||v|sin(theta) // 삼각형 넓이 S = (1/2)|u||v|sin(theta)
 
             Vector2 vectorOne = touch[1].position - touch[0].position;
             Vector2 vectorTwo = touch[2].position - touch[0].position;
+            // 새로운 touch 값 touch[0]->touch[1] 벡터(u)와 touch[0]->touch[2](v)의 벡터를 구함
             float fNewArea = Mathf.Abs(Vector3.Cross(vectorOne, vectorTwo).magnitude);
+            // 두 벡터 사이의 외적을 구함
 
             float deltaMagnitudeDiff = fLastArea - fNewArea;
+            // 두 삼각형의 넓이 차이를 구함. 음수가 나오면 손가락을 벌린 상태(줌인)
            
 
-            if(GetComponent<Camera>().orthographic) // if Viewing Projection is Orthographic Mode
+            if(GetComponent<Camera>().orthographic) // if Viewing Projection is Orthographic Mode(2D)
             {
                 GetComponent<Camera>().orthographicSize += (deltaMagnitudeDiff * fOrthoZoomSpeed * Time.deltaTime);
                 GetComponent<Camera>().orthographicSize = Mathf.Max(GetComponent<Camera>().orthographicSize, 5.0f);
             }
-            else // if Viewing Projection is Perspective Mode
+            else // if Viewing Projection is Perspective Mode(3D)
             {
                 GetComponent<Camera>().fieldOfView += (deltaMagnitudeDiff * fPerspectZoomSpeed * Time.deltaTime);
+                // Field of View의 값을 변경
                 GetComponent<Camera>().fieldOfView = Mathf.Clamp(GetComponent<Camera>().fieldOfView, 5.0f, 100.0f);
+                // Field of View 값을 5에서 100 사이로 제한
             }
-        /*
-            if(touch[0].phase == TouchPhase.Began || touch[1].phase == TouchPhase.Began || touch[2].phase == TouchPhase.Began)
-            {
-                Vector2[] vTouchLastPosArr = new Vectot2[3];
-                vTouchLastPosArr[0] = touch[0].position - touch[0].deltaPosition;
-                vTouchLastPosArr[1] = touch[1].position - touch[1].deltaPosition;
-                vTouchLastPosArr[2] = touch[2].position - touch[2].deltaPosition;
-            }
-            else if(touch[0].phase == TouchPhase.Moved || touch[1].phase == TouchPhase.Moved || touch[2].phase == TouchPhase.Moved)
-            {
-                Vector2 LastVectorOne = vTouchLastPosArr[1] - vTouchLastPosArr[0];
-                Vector2 LastVectorTwo = vTouchLastPosArr[2] - vTouchLastPosArr[0];
-                float fLastArea = Mathf.Abs(Vector3.Cross(LastVectorOne, LastVectorTwo).magnitude);
-
-                Vector2 vectorOne = touch[1].position - touch[0].position;
-                Vector2 vectorTwo = touch[2].position - touch[0].position;
-            }
-        */
         }
+
         else 
         {
             bIsCameraControl = false;
