@@ -5,13 +5,9 @@ using UnityEngine;
 public class PlayerController : MonoBehaviour
 {
     //RaycastHit hit;
-    public bool check = true;
-    public bool bSwitchClicked = false;
-    public bool bBtnClicked = false;
-    public bool bWheelClicked = false;
     float fMaxDistance = 40f; // Ray Distance(Length)
-    GameObject LastHitObj;
-    GameObject PlayerObj, CenterObj;
+    GameObject HitObject;
+    // GameObject PlayerObj, CenterObj;
     private Vector2 vCurPos, vLastPos;
     private Vector3 vMovePos;
     private float fMoveSpeed = 0.05f;
@@ -19,36 +15,42 @@ public class PlayerController : MonoBehaviour
     Vector3 vFirstPoint, vSecondPoint;
     float xAngle, yAngle, xAngleTemp, yAngleTemp, oldAngle;
    // public bool bIsItemClicked = false;
-    public bool bIsCameraControl = false;
     
     [HideInInspector]
+    public bool check = true;
+    public bool bSwitchClicked = false;
+    public bool bBtnClicked = false;
+    public bool bWheelClicked = false;
+    public bool bIsCameraControl = false;
     public float fPerspectZoomSpeed = 0.1f;
     public float fOrthoZoomSpeed = 0.1f;
     
     // Camera Camera;
     void Start()
     {
-        PlayerObj = transform.parent.gameObject;
-        xAngle = 0.0f; yAngle = 0.0f; oldAngle = -1.0f;
-        //transform.rotation = Quaternion.Euler(yAngle, xAngle, 0);
+        // PlayerObj = transform.parent.gameObject;
+        oldAngle = -1.0f;
+        xAngle = transform.eulerAngles.x;
+        yAngle = transform.eulerAngles.y;
+        // 현재 카메라가 보고 있는 방향의 회전 각을 xAngle과 yAngle에 저장
     }
 
     // Update is called once per frame
     // 오브젝터 제어 -> 카메라 제어 순으로 반복할 예정
     void Update()
     {
-        if(!bIsCameraControl) RayTraceFunc();
+        if(!bIsCameraControl) LineTraceFunc();
         // 현재 카메라 제어 중이 아닐 경우엔 오브젝트 제어
 
         else CameraControl();
         // 현재 카메라 제어 중이라면 카메라부터 제어
 
+        check = true;
         // if(!bIsItemClicked)
         // RotateCamera();
 
         // if(bSwitchClicked) StartCoroutine(WaitForIt(0.1f));       
         // else check = true;
-        check = true;
            // StartCoroutine(WaitForIt(0.05f));
     }
 
@@ -130,7 +132,7 @@ public class PlayerController : MonoBehaviour
                 //PlayerObj.transform.RotateAround(position, Vector3.up, -deltaAngle);
                 // 여기까지 미사용
 
-                PlayerObj.transform.rotation = Quaternion.Euler(yAngle, xAngle, 0.0f);
+                transform.rotation = Quaternion.Euler(yAngle, xAngle, 0.0f);
                 // 카메라의 부모 오브젝트인 Player의 Rotation을 변경
             }
         }
@@ -154,7 +156,7 @@ public class PlayerController : MonoBehaviour
                 vMovePos = (Vector3)(vLastPos - vCurPos);
                 // 움직인 터치의 좌표의 중간값을 CurPos에 저장한 후 LastPos와의 차이를 MovePos에 저장
                 
-                PlayerObj.transform.Translate(vMovePos * Time.deltaTime * fMoveSpeed);
+                transform.Translate(vMovePos * Time.deltaTime * fMoveSpeed);
                 // 카메라의 부모 오브젝트인 Player의 위치를 변경. 속도는 MoveSpeed로 설정
                 
                 vLastPos = ((touch[0].position - touch[0].deltaPosition) + (touch[1].position - touch[1].deltaPosition)) / 2;
@@ -214,8 +216,8 @@ public class PlayerController : MonoBehaviour
         }
     }
 
-    // Ray Trace용 함수(오브젝트와 상호작용하게 할 함수)
-    private void RayTraceFunc()
+    // Ray Cast용 함수(오브젝트와 상호작용하게 할 함수)
+    private void LineTraceFunc()
     {
       //  bIsItemClicked = true;
         if(Input.touchCount == 1 && check)
@@ -234,9 +236,9 @@ public class PlayerController : MonoBehaviour
             // 카메라로부터 터치한 공간까지 벡터를 Ray로 변환
 
             RaycastHit hit;
-            // Ray Cast(Ray Trace) 중 충돌한 object에 대한 정보를 저장할 변수
+            // Ray Cast(Line Trace) 중 충돌한 object에 대한 정보를 저장할 변수
 
-            GameObject HitObject;
+            // GameObject HitObject;
             // hit 값 중 Game 오브젝트만 저장할 변수
 
             if(touch.phase == TouchPhase.Began) // 화면을 눌렀을 때(딱 한 번)
@@ -250,7 +252,7 @@ public class PlayerController : MonoBehaviour
                     HitObject = hit.collider.gameObject;
                     // hit 중 gameOjbect만 저장
 
-                    LastHitObj = HitObject;
+                    // LastHitObj = HitObject;
                     // 나중에 touch를 뗐을 때를 위해 마지막에 Hit된 오브젝트 갱신
 
                     if(HitObject.name == "Wire_Plus_Start") // 오브젝트의 이름이 PlusStart(빨간 핀)일 경우
@@ -319,6 +321,8 @@ public class PlayerController : MonoBehaviour
                     {
                         HitObject.GetComponent<AmpereWheel>().OnInteract();
                         // 사용자가 Interaction을 했을 때의 스크립트 실행
+                        HitObject.GetComponent<AmpereWheel>().SetCurPos(touch.position);
+                        HitObject.GetComponent<AmpereWheel>().SetLastPos();
 
                         bWheelClicked = true;
 
@@ -345,7 +349,7 @@ public class PlayerController : MonoBehaviour
                     HitObject = hit.collider.gameObject; 
                     // 맞은 hit의 객체 정보를 HitObject에 저장
 
-                    LastHitObj = HitObject; 
+                    // LastHitObj = HitObject; 
                     // 터치를 뗐을 때의 트리거를 작동 시키기 위해 LastHitObj에도 저장
 
                     if(HitObject.name == "ON_OFF_Sub") // 맞은 객체의 이름이 전원 장치의 Sub 버튼일 경우
@@ -364,16 +368,44 @@ public class PlayerController : MonoBehaviour
                 }
             }
 
+            else if(touch.phase == TouchPhase.Moved) // 터치를 움직였을 때
+            {
+                if(Physics.Raycast(ray, out hit, fMaxDistance)) // Ray를 쏴서 충돌한 객체를 hit에 저장
+                {
+                    Debug.DrawLine(ray.origin, hit.point, Color.red, 0.5f); 
+                    // 맞았을 때 빨간색으로 표시(Debug용) 정식 출시 시 삭제해도 무관
+
+                    HitObject = hit.collider.gameObject; 
+                    // 맞은 hit의 객체 정보를 HitObject에 저장
+
+                    // LastHitObj = HitObject; 
+                    // 터치를 뗐을 때의 트리거를 작동 시키기 위해 LastHitObj에도 저장
+
+                    if(HitObject.name == "Ampere_Wheel") // 오브젝트의 이름이 전압 조절기일 경우
+                    {
+                        HitObject.GetComponent<AmpereWheel>().OnInteract();
+                        // 사용자가 Interaction을 했을 때의 스크립트 실행
+                        HitObject.GetComponent<AmpereWheel>().SetCurPos(touch.position);
+
+                        bWheelClicked = true;
+
+                        bIsCameraControl = false;
+                        // 카메라 제어 불가능으로 설정
+                      //  bIsItemClicked = true;
+                    }
+                }
+            }
+
             else if(touch.phase == TouchPhase.Ended) // 터치를 뗐을 때
             {
                 if(bBtnClicked) // 전원 장치의 Sub 버튼을 눌렀을 때 작동
                 {
-                    LastHitObj.GetComponent<OnOffSub>().OffInteract(); // Sub 버튼의 스크립트 실행
+                    HitObject.GetComponent<OnOffSub>().OffInteract(); // Sub 버튼의 스크립트 실행
                     bBtnClicked = false; // false로 reset
                 }
                 else if(bWheelClicked) // 아마 안 쓸 듯. 일단 나둠
                 {
-                    LastHitObj.GetComponent<AmpereWheel>().OffInteract();
+                    HitObject.GetComponent<AmpereWheel>().OffInteract();
                     bWheelClicked = false;
                 }
             }
