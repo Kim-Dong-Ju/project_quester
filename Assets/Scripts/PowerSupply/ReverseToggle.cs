@@ -24,7 +24,7 @@ public class ReverseToggle : MonoBehaviour
     {
         SetIsSwap(!bIsSwapped);
 
-        ParentObj.GetComponent<PSCollision>().SetSwap(bIsSwapped);
+        ParentObj.GetComponent<PowerSupply>().SetSwap(bIsSwapped);
         anim.SetToggleAnim(bIsSwapped);
 
         // if(bIsSwapped)

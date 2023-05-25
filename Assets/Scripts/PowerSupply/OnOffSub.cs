@@ -43,13 +43,13 @@ public class OnOffSub : MonoBehaviour
 
     public void SetIsPowered(bool bValue)
     {
-        //if(!ParentObj.GetComponent<PSCollision>().GetIsPowered())
+        //if(!ParentObj.GetComponent<PowerSupply>().GetIsPowered())
        // {
         if(bValue != bIsPowered)
             bIsPowered = bValue;
 
-        if(!ParentObj.GetComponent<PSCollision>().GetIsMainOn())
-            ParentObj.GetComponent<PSCollision>().SetIsPowered(bIsPowered);
+        if(!ParentObj.GetComponent<PowerSupply>().GetIsMainOn())
+            ParentObj.GetComponent<PowerSupply>().SetIsPowered(bIsPowered);
       //  }
     }
 

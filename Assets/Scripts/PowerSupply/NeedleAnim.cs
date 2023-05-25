@@ -34,6 +34,7 @@ public class NeedleAnim : MonoBehaviour
     void Start()
     {
         transform.localRotation = Quaternion.Euler(new Vector3(0, -140, 0));
+        Debug.Log(timeline.duration);
     }
 
     // // Update is called once per frame
@@ -68,7 +69,7 @@ public class NeedleAnim : MonoBehaviour
         {
             // Needle Animation when power supply is off
             bIsPlaying = false;
-           ReverseAnimation();
+            ReverseAnimation();
         }
     }
 
@@ -78,8 +79,23 @@ public class NeedleAnim : MonoBehaviour
         {
             bIsPlaying = true;
 
+            float Voltage = transform.parent.GetComponent<PowerSupply>().GetVoltage(); // 0.0 ~ 3.6
+            // int dt = -140; // 0
+            // float check = (float)(dt + 40) * 60 / 100;
+            // // needle -140 ~ -40     100
+
+            // while(check < yRotate)
+            // {
+            //     dt += 1;
+                
+            //     transform.Rotate(new Vector3(0, dt, 0));
+            //     check = (float)(dt + 40) * 60 / 100;
+            //     yield return null;
+            // }
+           // transform.localRotation = Quaternion.Euler(new Vector3(0, dt + (yRotate/2), 0));
+
             float dt = 0;
-            while(dt < timeline.duration)
+            while(dt < Voltage)
             {
                 dt += Time.deltaTime / (float)timeline.duration;
 
@@ -97,8 +113,10 @@ public class NeedleAnim : MonoBehaviour
         if(bPowered)
         {
             bIsPlaying = true;
+            float Voltage = transform.parent.GetComponent<PowerSupply>().GetVoltage(); // 0.0 ~ 3.6
 
-            float dt = (float)timeline.duration;
+           // float dt = (float)timeline.duration;
+           float dt = Voltage;
             while(dt > 0)
             {
                 dt -= Time.deltaTime / (float)timeline.duration;

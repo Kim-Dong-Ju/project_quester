@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class PlayerComponent : MonoBehaviour
+public class CameraControl : MonoBehaviour
 {
     // Vector3 FirstPoint;
     // Vector3 SecondPoint;

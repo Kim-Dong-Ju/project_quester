@@ -33,7 +33,7 @@ public class OnOffMain : MonoBehaviour
     {
         bIsPowered = bValue;
         
-        ParentObj.GetComponent<PSCollision>().SetIsMainOn(bIsPowered);
+        ParentObj.GetComponent<PowerSupply>().SetIsMainOn(bIsPowered);
         if(bIsPowered) SwitchRotation.x = -105;
         else SwitchRotation.x = -90;
         // WireRed.GetComponent<RedPin>().SetIsPowered(bIsPowered);
