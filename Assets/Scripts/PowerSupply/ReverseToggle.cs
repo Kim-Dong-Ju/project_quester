@@ -22,7 +22,7 @@ public class ReverseToggle : MonoBehaviour
     // }
     public void OnInteract()
     {
-        SetIsSwap(!bIsSwapped);
+        bIsSwapped = !bIsSwapped;
 
         ParentObj.GetComponent<PowerSupply>().SetSwap(bIsSwapped);
         anim.SetToggleAnim(bIsSwapped);
@@ -37,14 +37,14 @@ public class ReverseToggle : MonoBehaviour
         // }
     }
 
-    public void SetIsSwap(bool bValue)
-    {
-        bIsSwapped = bValue;
+    // public override void SetSwap(bool bValue)
+    // {
+    //     base.SetSwap(bValue);
         
-    }
+    // }
 
-    public bool GetIsSwap()
-    {
-        return bIsSwapped;
-    }
+    // public bool GetIsSwap()
+    // {
+    //     return bIsSwapped;
+    // }
 }

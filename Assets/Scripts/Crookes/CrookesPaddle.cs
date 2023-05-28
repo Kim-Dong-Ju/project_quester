@@ -8,13 +8,21 @@ public class CrookesPaddle : MonoBehaviour
     public GameObject PowerSupply;
     public GameObject PlusWire;
     public GameObject MinusWire;
-
-    public bool bIsPowered = false;
-    public bool bIsSwapped = false;
+    GameObject CathodeRayMinus;
+    GameObject CathodeRayPlus;
+    GameObject pinWheel;
+    bool bIsPowered = false;
+    bool bIsSwapped = false;
+    float volt = 0.0f;
     // Start is called before the first frame update
     void Start()
     {
-        
+        CathodeRayMinus = transform.Find("CathodeRay_Minus").gameObject;
+        CathodeRayPlus = transform.Find("CathodeRay_Plus").gameObject;
+        pinWheel = transform.Find("PinWheel").gameObject;
+        volt = PowerSupply.GetComponent<PowerSupply>().GetVoltage();
+        CathodeRayMinus.GetComponent<Light>().intensity = 0;
+        CathodeRayPlus.GetComponent<Light>().intensity = 0;
     }
 
     // Update is called once per frame
@@ -30,6 +38,9 @@ public class CrookesPaddle : MonoBehaviour
 
         if(bPConnect && bMConnect)
             bIsPowered = bValue;
+
+        SetLight();
+        pinWheel.GetComponent<CrookesWheel>().SetPinWheel(bIsPowered, bIsSwapped);
     }
     
     public void SetIsSwapped(bool bValue)
@@ -39,7 +50,39 @@ public class CrookesPaddle : MonoBehaviour
 
         if(bPConnect && bMConnect)
             bIsSwapped = bValue;
+        
+        SetLight();
+        pinWheel.GetComponent<CrookesWheel>().SetPinWheel(bIsPowered, bIsSwapped);
     }
+
+    public void SetVoltage(float fVolt)
+    {
+        volt = fVolt;
+        pinWheel.GetComponent<CrookesWheel>().SetVoltage(volt);
+    }
+
+    private void SetLight()
+    {
+        if(bIsPowered)
+        {
+            if(bIsSwapped) // Toggle을 눌렀을 때. 즉 검정핀이 Plus극이, 빨간핀이 Minus극이 되었을 때
+            {
+                CathodeRayPlus.GetComponent<Light>().intensity = volt;
+                CathodeRayMinus.GetComponent<Light>().intensity = 0;
+            }
+            else
+            {
+                CathodeRayMinus.GetComponent<Light>().intensity = volt;
+                CathodeRayPlus.GetComponent<Light>().intensity = 0;
+            }
+        }
+        else
+        {
+            CathodeRayMinus.GetComponent<Light>().intensity = 0;
+            CathodeRayPlus.GetComponent<Light>().intensity = 0;
+        }
+    }
+
     private void OnTriggerEnter(Collider collider)
     {
         if(collider.gameObject.name == "TIP_ERed")

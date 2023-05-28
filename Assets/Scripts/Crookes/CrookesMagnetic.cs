@@ -8,6 +8,9 @@ public class CrookesMagnetic : MonoBehaviour
     public GameObject PowerSupply;
     public GameObject PlusWire;
     public GameObject MinusWire;
+    private bool bIsPowered = false;
+    private bool bIsSwapped = false;
+    private float volt = 0.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -20,8 +23,30 @@ public class CrookesMagnetic : MonoBehaviour
     {
         
     }
+    public void SetIsPowered(bool bValue)
+    {
+        bool bPConnect = PlusWire.GetComponent<RedEndPin>().GetIsConneted();
+        bool bMConnect = MinusWire.GetComponent<BlackEndPin>().GetIsConneted();
 
-    public void OnTriggerEnter(Collider collider)
+        if(bPConnect && bMConnect)
+            bIsPowered = bValue;
+    }
+    
+    public void SetIsSwapped(bool bValue)
+    {
+        bool bPConnect = PlusWire.GetComponent<RedEndPin>().GetIsConneted();
+        bool bMConnect = MinusWire.GetComponent<BlackEndPin>().GetIsConneted();
+
+        if(bPConnect && bMConnect)
+            bIsSwapped = bValue;
+    }
+
+    public void SetVoltage(float fVolt)
+    {
+        volt = fVolt;
+    }
+
+    private void OnTriggerEnter(Collider collider)
     {
         if(collider.gameObject.name == "TIP_ERed")
         {

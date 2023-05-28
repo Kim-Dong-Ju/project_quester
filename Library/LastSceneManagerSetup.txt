@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/Models.unity
+- path: Assets/Scenes/PowerSupply.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0

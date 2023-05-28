@@ -8,16 +8,21 @@ public class PlayerController : MonoBehaviour
     float fMaxDistance = 40f; // Ray Distance(Length)
     GameObject HitObject, dragAnchor;
     // GameObject PlayerObj, CenterObj;
-    private Vector2 vCurPos, vLastPos;
+    private Vector2 vCurPos, vLastPos; 
     private Vector3 vMovePos;
     private float fMoveSpeed = 0.05f;
-   
+    // touch variable to control camera move
     Vector3 vFirstPoint, vSecondPoint;
-    float xAngle, yAngle, xAngleTemp, yAngleTemp, oldAngle, fLastArea, fNewArea;
-   // public bool bIsItemClicked = false;
+    float xAngle, yAngle, xAngleTemp, yAngleTemp, fLastArea, fNewArea;
+    // public bool bIsItemClicked = false;
+    // touch variable to control camera rotate and zoom
+
+    
     
     [HideInInspector]
     public Vector3 camToFloor, offset, vec;
+    public float wheelAngle;
+    public Vector2 wheelLastPos, wheelCurPos;
     // private enum cameraMode {
     //     None, Move, Rotate, Zoom // None is None & ItemHandle
     // };
@@ -43,7 +48,6 @@ public class PlayerController : MonoBehaviour
     {
         // PlayerObj = transform.parent.gameObject;
         vLastPos = transform.position;
-        oldAngle = -1.0f;
         xAngle = transform.eulerAngles.x;
         yAngle = transform.eulerAngles.y;
         CurClick = whichClicked.None;
@@ -156,11 +160,11 @@ public class PlayerController : MonoBehaviour
                 // 카메라의 부모 오브젝트인 Player의 Rotation을 변경
                // CurMode = cameraMode.Rotate;
             }
-            else if(touch[0].phase == TouchPhase.Ended || touch[0].phase == TouchPhase.Canceled)
-            {
-                vFirstPoint = vSecondPoint;
-              //  CurMode = cameraMode.None;
-            }
+            // else if(touch[0].phase == TouchPhase.Ended || touch[0].phase == TouchPhase.Canceled)
+            // {
+            //     vFirstPoint = vSecondPoint;
+            //   //  CurMode = cameraMode.None;
+            // }
         }
 
         // Camera Move 
@@ -192,10 +196,10 @@ public class PlayerController : MonoBehaviour
              //   CurMode = cameraMode.Move;
             }
             
-            else if(touch[0].phase == TouchPhase.Ended || touch[0].phase == TouchPhase.Canceled || touch[1].phase == TouchPhase.Ended || touch[1].phase == TouchPhase.Canceled)
-            {
-                vLastPos = vCurPos;
-            }
+            // else if(touch[0].phase == TouchPhase.Ended || touch[0].phase == TouchPhase.Canceled || touch[1].phase == TouchPhase.Ended || touch[1].phase == TouchPhase.Canceled)
+            // {
+            //     vLastPos = vCurPos;
+            // }
         }
 
         // Camera Zoom-In, Zoom-Out
@@ -249,10 +253,10 @@ public class PlayerController : MonoBehaviour
                 fLastArea = fNewArea;
            //     CurMode = cameraMode.Zoom;
             }
-            else if(touch[0].phase == TouchPhase.Ended || touch[0].phase == TouchPhase.Canceled || touch[1].phase == TouchPhase.Ended || touch[1].phase == TouchPhase.Canceled || touch[2].phase == TouchPhase.Ended || touch[2].phase == TouchPhase.Canceled)
-            {
-                fLastArea = fNewArea;
-            }
+            // else if(touch[0].phase == TouchPhase.Ended || touch[0].phase == TouchPhase.Canceled || touch[1].phase == TouchPhase.Ended || touch[1].phase == TouchPhase.Canceled || touch[2].phase == TouchPhase.Ended || touch[2].phase == TouchPhase.Canceled)
+            // {
+            //    // fLastArea = fNewArea;
+            // }
         }
 
         else 
@@ -309,7 +313,7 @@ public class PlayerController : MonoBehaviour
                         dist = hit.transform.position.z - Camera.main.transform.position.z;
                         vec = new Vector3(touch.position.x, touch.position.y, dist);
                         vec = Camera.main.ScreenToWorldPoint(vec);
-                        vec.z = 0.3f;
+                      //  vec.z = 0.3f;
                         offset = toDrag.position - vec;
                         HitObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
                         dragging = true;
@@ -329,7 +333,7 @@ public class PlayerController : MonoBehaviour
                         dist = hit.transform.position.z - Camera.main.transform.position.z;
                         vec = new Vector3(touch.position.x, touch.position.y, dist);
                         vec = Camera.main.ScreenToWorldPoint(vec);
-                        vec.z = 0.3f;
+                       // vec.z = 0.3f;
                         offset = toDrag.position - vec;
                         HitObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
                         dragging = true;
@@ -390,11 +394,14 @@ public class PlayerController : MonoBehaviour
                     
                     else if(HitObject.name == "Ampere_Wheel") // 오브젝트의 이름이 전압 조절기일 경우
                     {
-                        HitObject.GetComponent<AmpereWheel>().SetCurPos(vTouchPos);
-                        HitObject.GetComponent<AmpereWheel>().SetLastPos();
-                        // 현재 터치 위치를 AmpereWheel 스크립트로 전송
-                        HitObject.GetComponent<AmpereWheel>().OnInteract();
+                        wheelLastPos = touch.position;
+                        // HitObject.GetComponent<AmpereWheel>().SetCurPos(vTouchPos);
+                        // HitObject.GetComponent<AmpereWheel>().SetLastPos();
+                        // // 현재 터치 위치를 AmpereWheel 스크립트로 전송
+                        // HitObject.GetComponent<AmpereWheel>().OnInteract();
                         // 사용자가 Interaction을 했을 때의 스크립트 실행
+                       // Debug.Log("Wheel Last Pos: "+wheelLastPos);
+                        dragging = true;
 
                         CurClick = whichClicked.PSWheel;
                        // bWheelClicked = true;
@@ -411,7 +418,7 @@ public class PlayerController : MonoBehaviour
                         dist = hit.transform.position.z - Camera.main.transform.position.z;
                         vec = new Vector3(touch.position.x, touch.position.y, dist);
                         vec = Camera.main.ScreenToWorldPoint(vec);
-                        vec.z = 0.3f;
+                       // vec.z = 0.3f;
                         offset = toDrag.position - vec;
                         HitObject.transform.localRotation = Quaternion.Euler(new Vector3(-90, 0, 0));
                         dragging = true;
@@ -429,7 +436,7 @@ public class PlayerController : MonoBehaviour
                         dist = hit.transform.position.z - Camera.main.transform.position.z;
                         vec = new Vector3(touch.position.x, touch.position.y, dist);
                         vec = Camera.main.ScreenToWorldPoint(vec);
-                        vec.z = 0.3f;
+                     //   vec.z = 0.3f;
                         offset = toDrag.position - vec;
                         HitObject.transform.localRotation = Quaternion.Euler(new Vector3(-90, 0, 0));
                         dragging = true;
@@ -499,7 +506,7 @@ public class PlayerController : MonoBehaviour
                         }
                         vec = new Vector3(Input.mousePosition.x, Input.mousePosition.y, dist);
                         vec = Camera.main.ScreenToWorldPoint(vec);
-                        vec.z = 0.3f;
+                        // vec.z = 0.3f;
                         toDrag.position = vec + offset;
 
 
@@ -517,7 +524,7 @@ public class PlayerController : MonoBehaviour
                         }
                         vec = new Vector3(Input.mousePosition.x, Input.mousePosition.y, dist);
                         vec = Camera.main.ScreenToWorldPoint(vec);
-                        vec.z = 0.3f;
+                     //   vec.z = 0.3f;
                         toDrag.position = vec + offset;
 
 
@@ -528,9 +535,15 @@ public class PlayerController : MonoBehaviour
 
                     else if(CurClick == whichClicked.PSWheel) // 현재 선택한 오브젝트의 이름이 전압 조절기일 경우
                     {
-                        HitObject.GetComponent<AmpereWheel>().OnInteract();
-                        // 사용자가 Interaction을 했을 때의 스크립트 실행
-                        HitObject.GetComponent<AmpereWheel>().SetCurPos(vTouchPos);
+                        wheelCurPos = touch.position;
+                        Vector2 dir = wheelLastPos - wheelCurPos;
+                        wheelAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                        wheelAngle *= -1;
+                        wheelAngle = Mathf.Clamp(wheelAngle, -360.0f, 360.0f);
+                        HitObject.GetComponent<AmpereWheel>().SetAngle(wheelAngle);
+                        // HitObject.GetComponent<AmpereWheel>().OnInteract();
+                        // // 사용자가 Interaction을 했을 때의 스크립트 실행
+                        // HitObject.GetComponent<AmpereWheel>().SetCurPos(vTouchPos);
 
                         CurClick = whichClicked.PSWheel;
                       //  bWheelClicked = true;
@@ -550,7 +563,7 @@ public class PlayerController : MonoBehaviour
                         }
                         vec = new Vector3(Input.mousePosition.x, Input.mousePosition.y, dist);
                         vec = Camera.main.ScreenToWorldPoint(vec);
-                        vec.z = 0.3f;
+                       // vec.z = 0.3f;
                         toDrag.position = vec + offset;
 
 
@@ -568,7 +581,7 @@ public class PlayerController : MonoBehaviour
                         }
                         vec = new Vector3(Input.mousePosition.x, Input.mousePosition.y, dist);
                         vec = Camera.main.ScreenToWorldPoint(vec);
-                        vec.z = 0.3f;
+                       // vec.z = 0.3f;
                         toDrag.position = vec + offset;
                         //HitObject.GetComponent<BlackEndPin>().SetCurPos(hit.point);
 
@@ -595,11 +608,16 @@ public class PlayerController : MonoBehaviour
                 {
                     HitObject.GetComponent<OnOffSub>().OffInteract(); // Sub 버튼의 스크립트 실행
                    // bBtnClicked = false; // false로 reset
+                   HitObject = null;
                 }
 
                 else if(CurClick == whichClicked.PSWheel) // 아마 안 쓸 듯. 일단 나둠
                 {
-                    HitObject.GetComponent<AmpereWheel>().OffInteract();
+                    wheelLastPos = wheelCurPos;
+                    HitObject.GetComponent<AmpereWheel>().SetLastRotate();
+                    dragging = false;
+                    HitObject = null;
+                  //  HitObject.GetComponent<AmpereWheel>().OffInteract();
                   //  bWheelClicked = false;
                 }
 

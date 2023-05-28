@@ -11,6 +11,7 @@ public class NeedleAnim : MonoBehaviour
     // public TimelineAsset timeline;
     private bool bIsPlaying = false;
     private bool bPowered = false;
+    float lastVolt;
 
     // // Start is called before the first frame update
     // void Start()
@@ -80,6 +81,7 @@ public class NeedleAnim : MonoBehaviour
             bIsPlaying = true;
 
             float Voltage = transform.parent.GetComponent<PowerSupply>().GetVoltage(); // 0.0 ~ 3.6
+           
             // int dt = -140; // 0
             // float check = (float)(dt + 40) * 60 / 100;
             // // needle -140 ~ -40     100
@@ -105,6 +107,40 @@ public class NeedleAnim : MonoBehaviour
             }
 
             bIsPlaying = false;
+            lastVolt = Voltage;
+        }
+        else // 만약 전원이 켜진 상태라면, 즉 전원이 켜진 상태에서 전압만 변경한다면
+        {
+            bIsPlaying = true;
+
+            float Voltage = transform.parent.GetComponent<PowerSupply>().GetVoltage(); // 0.0 ~ 3.6
+           
+            // int dt = -140; // 0
+            // float check = (float)(dt + 40) * 60 / 100;
+            // // needle -140 ~ -40     100
+
+            // while(check < yRotate)
+            // {
+            //     dt += 1;
+                
+            //     transform.Rotate(new Vector3(0, dt, 0));
+            //     check = (float)(dt + 40) * 60 / 100;
+            //     yield return null;
+            // }
+           // transform.localRotation = Quaternion.Euler(new Vector3(0, dt + (yRotate/2), 0));
+
+            float dt = lastVolt;
+            while(dt < Voltage)
+            {
+                dt += Time.deltaTime / (float)timeline.duration;
+
+                timeline.time = Mathf.Max(dt, 0);
+                timeline.Evaluate();
+                yield return null;
+            }
+
+            bIsPlaying = false;
+            lastVolt = Voltage;
         }
     }
 
@@ -127,6 +163,26 @@ public class NeedleAnim : MonoBehaviour
             }
 
             bIsPlaying = false;
+            lastVolt = Voltage; 
+        }
+        else
+        {
+            bIsPlaying = true;
+            float Voltage = transform.parent.GetComponent<PowerSupply>().GetVoltage(); // 0.0 ~ 3.6
+
+           // float dt = (float)timeline.duration;
+           float dt = lastVolt;
+            while(dt > Voltage)
+            {
+                dt -= Time.deltaTime / (float)timeline.duration;
+
+                timeline.time = Mathf.Max(dt, 0);
+                timeline.Evaluate();
+                yield return null;
+            }
+
+            bIsPlaying = false;
+            lastVolt = Voltage; 
         }
     }
 }
