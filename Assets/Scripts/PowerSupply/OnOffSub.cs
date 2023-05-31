@@ -5,15 +5,11 @@ using UnityEngine;
 public class OnOffSub : MonoBehaviour
 {
     private bool bIsPowered = false;
-    GameObject ParentObj;
-    GameObject WireRed;
-    GameObject WireBlack;
+    PowerSupply powerSupply;
     // Start is called before the first frame update
     void Start()
     {
-        ParentObj = transform.parent.gameObject;
-        WireRed = ParentObj.transform.Find("Wire_Plus_Start").gameObject;
-        WireBlack = ParentObj.transform.Find("Wire_Minus_Start").gameObject;
+        powerSupply = transform.parent.gameObject.GetComponent<PowerSupply>();
     }
 
     // // Update is called once per frame
@@ -48,8 +44,8 @@ public class OnOffSub : MonoBehaviour
         if(bValue != bIsPowered)
             bIsPowered = bValue;
 
-        if(!ParentObj.GetComponent<PowerSupply>().GetIsMainOn())
-            ParentObj.GetComponent<PowerSupply>().SetIsPowered(bIsPowered);
+        if(!powerSupply.GetIsMainOn())
+            powerSupply.SetIsPowered(bIsPowered);
       //  }
     }
 

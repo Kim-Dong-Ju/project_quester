@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class BlackEndPin : MonoBehaviour
 {
-    public GameObject BlackStart;
     // Start is called before the first frame update
     bool bIsConnected = false;
     bool bIsPowered = false;

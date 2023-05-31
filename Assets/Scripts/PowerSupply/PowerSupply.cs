@@ -4,53 +4,60 @@ using UnityEngine;
 
 public class PowerSupply : MonoBehaviour
 {
-    GameObject Wire_Plus_Start;
-    GameObject Wire_Minus_Start;
-    GameObject OnOffSubButton;
-    GameObject OnOffMainSwitch;
+    // GameObject Wire_Plus_Start;
+    // GameObject Wire_Minus_Start;
+    // GameObject OnOffSubButton;
+    // GameObject OnOffMainSwitch;
     public GameObject Needle;
-    public GameObject CrookesWheel;
-    public GameObject CrookesMagnetic;
-    public GameObject CrookesCross;
+    public GameObject CrookesWheelObj;
+    public GameObject CrookesMagneticObj;
+    public GameObject CrookesCrossObj;
    // bool bPlusStartConnected = false;
    // bool bMinusStartConnected = false;
     protected bool bPowered = false;
     private bool bIsMainOn = false;
     protected bool bIsSwapped = false;
     protected bool bIsUp = false;
-    protected float volt = 0;
+    protected float Ampere = 0;
+    NeedleAnim needleAnim;
+    RedStartPin redStartPin;
+    BlackStartPin blackStartPin;
+    OnOffMain onOffMain;
+    OnOffSub onOffSub;
+    CrookesCross crookesCross;
+    CrookesMagnetic crookesMagnetic;
+    CrookesPaddle crookesPaddle;
     
     // Start is called before the first frame update
     void Start()
     {
-        Wire_Plus_Start = transform.Find("Wire_Plus_Start").gameObject;    
-        Wire_Minus_Start = transform.Find("Wire_Minus_Start").gameObject;
-        OnOffSubButton = transform.Find("ON_OFF_Sub").gameObject;
-        OnOffMainSwitch = transform.Find("ON_OFF_Main").gameObject;
-        Needle.GetComponent<NeedleAnim>().SetNeedleAnim(false);
+        redStartPin = transform.Find("Wire_Plus_Start").gameObject.GetComponent<RedStartPin>();    
+        blackStartPin = transform.Find("Wire_Minus_Start").gameObject.GetComponent<BlackStartPin>();
+        onOffSub = transform.Find("ON_OFF_Sub").gameObject.GetComponent<OnOffSub>();
+        onOffMain = transform.Find("ON_OFF_Main").gameObject.GetComponent<OnOffMain>();
+        needleAnim = Needle.GetComponent<NeedleAnim>();
+        crookesCross = CrookesCrossObj.GetComponent<CrookesCross>();
+        crookesMagnetic = CrookesMagneticObj.GetComponent<CrookesMagnetic>();
+        crookesPaddle = CrookesWheelObj.GetComponent<CrookesPaddle>();
+        needleAnim.SetNeedleAnim(false);
     }
 
     // Update is called once per frame
-    void Update()
-    {
-        // bPowered = OnOffSubButton.GetComponent<OnOffSub>().GetIsPowered();
-        // if(Wire_Minus_Start.GetComponent<BlackStartPin>().GetIsConneted())
-        //     Wire_Minus_Start.GetComponent<BlackStartPin>().SetIsPowered(bPowered);
+    // void Update()
+    // {
 
-        // if(Wire_Plus_Start.GetComponent<RedStartPin>().GetIsConneted())
-        //     Wire_Plus_Start.GetComponent<RedStartPin>().SetIsPowered(bPowered);
-    }
+    // }
 
     public void SetIsPowered(bool bValue)
     {
         bPowered = bValue;
 
-        Wire_Plus_Start.GetComponent<RedStartPin>().SetIsPowered(bPowered);
-        Wire_Minus_Start.GetComponent<BlackStartPin>().SetIsPowered(bPowered);
+        redStartPin.SetIsPowered(bPowered);
+        blackStartPin.SetIsPowered(bPowered);
         SetNeedleAnim(bPowered);
-        CrookesWheel.GetComponent<CrookesPaddle>().SetIsPowered(bPowered);
-        CrookesCross.GetComponent<CrookesCross>().SetIsPowered(bPowered);
-        CrookesMagnetic.GetComponent<CrookesMagnetic>().SetIsPowered(bPowered);
+        crookesPaddle.SetIsPowered(bPowered);
+        crookesCross.SetIsPowered(bPowered);
+        crookesMagnetic.SetIsPowered(bPowered);
     }
 
     public void SetIsMainOn(bool bValue)
@@ -63,26 +70,31 @@ public class PowerSupply : MonoBehaviour
     {
         bIsSwapped = bValue;
 
-        Wire_Plus_Start.GetComponent<RedStartPin>().SetIsPlus(bIsSwapped);
-        Wire_Minus_Start.GetComponent<BlackStartPin>().SetIsMinus(bIsSwapped);
-        CrookesWheel.GetComponent<CrookesPaddle>().SetIsSwapped(bIsSwapped);
-        CrookesCross.GetComponent<CrookesCross>().SetIsSwapped(bIsSwapped);
-        CrookesMagnetic.GetComponent<CrookesMagnetic>().SetIsSwapped(bIsSwapped);
+        redStartPin.SetIsPlus(bIsSwapped);
+        blackStartPin.SetIsMinus(bIsSwapped);
+        crookesPaddle.SetIsSwapped(bIsSwapped);
+        crookesCross.SetIsSwapped(bIsSwapped);
+        crookesMagnetic.SetIsSwapped(bIsSwapped);
     }
 
-    public void SetVoltage(float value)
+    public void SetAmpere(float value)
     {
-        Debug.Log("PowerSupply volt: " + volt);
-        volt = value;
-        SetNeedleAnim(bIsUp);
-        CrookesWheel.GetComponent<CrookesPaddle>().SetVoltage(volt);
-        CrookesCross.GetComponent<CrookesCross>().SetVoltage(volt);
-        CrookesMagnetic.GetComponent<CrookesMagnetic>().SetVoltage(volt);
+        Debug.Log("PowerSupply Ampere: " + Ampere);
+        Ampere = value;
+        NeedleUpChange(bIsUp);
+        crookesCross.SetAmpere(Ampere);
+        crookesPaddle.SetAmpere(Ampere);
+        crookesMagnetic.SetAmpere(Ampere);
     }
 
     public void SetNeedleAnim(bool value)
     {
-        Needle.GetComponent<NeedleAnim>().SetNeedleAnim(value);
+        needleAnim.SetNeedleAnim(value);
+    }
+
+    private void NeedleUpChange(bool value)
+    {
+        needleAnim.AmpereUpAnim(value);
     }
 
     public void SetIsUp(bool value)
@@ -104,9 +116,9 @@ public class PowerSupply : MonoBehaviour
         return bIsSwapped;
     }
 
-    public float GetVoltage()
+    public float GetAmpere()
     {
-        return volt;
+        return Ampere;
     }
 
     private void OnTriggerEnter(Collider collider)

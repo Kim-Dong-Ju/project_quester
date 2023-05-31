@@ -8,22 +8,12 @@ public class NeedleAnim : MonoBehaviour
 {
    // public GameObject ParentObj;
     private PlayableDirector timeline;
+    PowerSupply powerSupply;
     // public TimelineAsset timeline;
     private bool bIsPlaying = false;
     private bool bPowered = false;
-    float lastVolt;
-
-    // // Start is called before the first frame update
-    // void Start()
-    // {
-        
-    // }
-
-    // // Update is called once per frame
-    // void Update()
-    // {
-        
-    // }
+    private bool bChange = false;
+    float lastAmpere;
 
     private void Awake()
     {
@@ -34,6 +24,7 @@ public class NeedleAnim : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        powerSupply = transform.parent.gameObject.GetComponent<PowerSupply>();
         transform.localRotation = Quaternion.Euler(new Vector3(0, -140, 0));
         Debug.Log(timeline.duration);
     }
@@ -48,27 +39,44 @@ public class NeedleAnim : MonoBehaviour
     {
         if(bIsPlaying) return;
         StartCoroutine(Play());
-        bPowered = true;
     }
 
     public void ReverseAnimation()
     {
         if(bIsPlaying) return;
         StartCoroutine(Reverse());
-        bPowered = false;
     }
 
-    public void SetNeedleAnim(bool bValue)
+    public void SetNeedleAnim(bool bValue) // 전원을 켜고 끌 때 사용하게 할 애니메이션
     {
         if(bValue)
         {
             // Needle Animation when power supply is on
             bIsPlaying = false;
             PlayAnimation();
+            bPowered = true;
         }
         else
         {
             // Needle Animation when power supply is off
+            bIsPlaying = false;
+            ReverseAnimation(); 
+            bPowered = false;
+        }
+    }
+
+    public void AmpereUpAnim(bool value) // 전류를 변화시킬 때 사용하게 할 애니메이션
+    {
+        if(!bPowered) return;
+        if(value)
+        {
+            bChange = true;
+            bIsPlaying = false;
+            PlayAnimation();
+        }
+        else
+        {
+            bChange = true;
             bIsPlaying = false;
             ReverseAnimation();
         }
@@ -76,11 +84,12 @@ public class NeedleAnim : MonoBehaviour
 
     IEnumerator Play()
     {
+        float Ampere = powerSupply.GetAmpere() / 10.0f;
+        // powerSupply.GetVoltage() => 0.0 ~ 3.6 이므로 Ampere는 0.0 ~ 0.36임
+        // Needle Animation은 0.36초로 재생되게 설정
         if(!bPowered)
         {
             bIsPlaying = true;
-
-            float Voltage = transform.parent.GetComponent<PowerSupply>().GetVoltage(); // 0.0 ~ 3.6
            
             // int dt = -140; // 0
             // float check = (float)(dt + 40) * 60 / 100;
@@ -97,7 +106,7 @@ public class NeedleAnim : MonoBehaviour
            // transform.localRotation = Quaternion.Euler(new Vector3(0, dt + (yRotate/2), 0));
 
             float dt = 0;
-            while(dt < Voltage)
+            while(dt < Ampere)
             {
                 dt += Time.deltaTime / (float)timeline.duration;
 
@@ -107,13 +116,11 @@ public class NeedleAnim : MonoBehaviour
             }
 
             bIsPlaying = false;
-            lastVolt = Voltage;
+            lastAmpere = Ampere;
         }
         else // 만약 전원이 켜진 상태라면, 즉 전원이 켜진 상태에서 전압만 변경한다면
         {
             bIsPlaying = true;
-
-            float Voltage = transform.parent.GetComponent<PowerSupply>().GetVoltage(); // 0.0 ~ 3.6
            
             // int dt = -140; // 0
             // float check = (float)(dt + 40) * 60 / 100;
@@ -129,8 +136,8 @@ public class NeedleAnim : MonoBehaviour
             // }
            // transform.localRotation = Quaternion.Euler(new Vector3(0, dt + (yRotate/2), 0));
 
-            float dt = lastVolt;
-            while(dt < Voltage)
+            float dt = lastAmpere;
+            while(dt < Ampere)
             {
                 dt += Time.deltaTime / (float)timeline.duration;
 
@@ -140,19 +147,22 @@ public class NeedleAnim : MonoBehaviour
             }
 
             bIsPlaying = false;
-            lastVolt = Voltage;
+            lastAmpere = Ampere;
         }
     }
 
     private IEnumerator Reverse()
     {
+        float Ampere = powerSupply.GetAmpere() / 10.0f;
+        // powerSupply.GetVoltage() => 0.0 ~ 3.6 이므로 Ampere는 0.0 ~ 0.36임
+        // Needle Animation은 0.36초로 재생되게 설정
         if(bPowered)
         {
             bIsPlaying = true;
-            float Voltage = transform.parent.GetComponent<PowerSupply>().GetVoltage(); // 0.0 ~ 3.6
+            
 
            // float dt = (float)timeline.duration;
-           float dt = Voltage;
+           float dt = Ampere;
             while(dt > 0)
             {
                 dt -= Time.deltaTime / (float)timeline.duration;
@@ -163,16 +173,15 @@ public class NeedleAnim : MonoBehaviour
             }
 
             bIsPlaying = false;
-            lastVolt = Voltage; 
+            lastAmpere = Ampere; 
         }
         else
         {
             bIsPlaying = true;
-            float Voltage = transform.parent.GetComponent<PowerSupply>().GetVoltage(); // 0.0 ~ 3.6
 
            // float dt = (float)timeline.duration;
-           float dt = lastVolt;
-            while(dt > Voltage)
+           float dt = lastAmpere;
+            while(dt > Ampere)
             {
                 dt -= Time.deltaTime / (float)timeline.duration;
 
@@ -182,7 +191,7 @@ public class NeedleAnim : MonoBehaviour
             }
 
             bIsPlaying = false;
-            lastVolt = Voltage; 
+            lastAmpere = Ampere; 
         }
     }
 }

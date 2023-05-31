@@ -6,7 +6,7 @@ public class PlayerController : MonoBehaviour
 {
     //RaycastHit hit;
     float fMaxDistance = 40f; // Ray Distance(Length)
-    GameObject HitObject, dragAnchor;
+    GameObject HitObject;
     // GameObject PlayerObj, CenterObj;
     private Vector2 vCurPos, vLastPos; 
     private Vector3 vMovePos;
@@ -33,9 +33,6 @@ public class PlayerController : MonoBehaviour
    // cameraMode CurMode;
     whichClicked CurClick;
     public bool check = true;
-    // public bool bSwitchClicked = false;
-    // public bool bBtnClicked = false;
-    // public bool bWheelClicked = false;
     private float dist;
     private bool dragging = false;
     private Transform toDrag;
@@ -57,7 +54,7 @@ public class PlayerController : MonoBehaviour
 
     // Update is called once per frame
     // 오브젝터 제어 -> 카메라 제어 순으로 반복할 예정
-    void Update()
+    void LateUpdate()
     {
         if(!bIsCameraControl) LineTraceFunc();
         // 현재 카메라 제어 중이 아닐 경우엔 오브젝트 제어
@@ -101,13 +98,20 @@ public class PlayerController : MonoBehaviour
         // 카메라 컨트롤 시 제어 중이라고 설정
 
         // Camera Rotate
+        if(Input.touchCount == 0)
+        {
+            // vCurPos = null;
+            // vLastPos = null;
+            fLastArea = 0;
+            fNewArea = 0;
+        }
         if(Input.touchCount == 1)  // 터치 1개 -> 카메라 회전
         {
             touch[0] = Input.GetTouch(0); 
             // 0번 터치(한 손가락 터치) 값 가져옴
             if(touch[0].phase == TouchPhase.Began) // 터치를 눌렀을 때(첫 입력 시)
             {
-                vFirstPoint = touch[0].position - touch[0].deltaPosition;
+                vLastPos = touch[0].position - touch[0].deltaPosition;
                 // touch[0]의 위치 좌표(position)에서 (가장 마지막 프레임에서 발생했던 위치 좌표와 현재 프레임에서 발생한 터치 위치의 차이)(deltaPosition)를 빼서 FirstPosition로 저장 
                 
                 xAngleTemp = xAngle;
@@ -120,11 +124,11 @@ public class PlayerController : MonoBehaviour
 
             if(touch[0].phase == TouchPhase.Moved) // 터치를 움직였을 때
             {
-                vSecondPoint = touch[0].position - touch[0].deltaPosition;
+                vCurPos = touch[0].position - touch[0].deltaPosition;
                 // touch[0]의 위치 정보를 vSecondPoint에 저장
 
-                xAngle = xAngleTemp + (vSecondPoint.x - vFirstPoint.x) * 180 / Screen.width;
-                yAngle = (yAngleTemp + (vSecondPoint.y - vFirstPoint.y) * 90 * 3f / Screen.height) * -1.0f;
+                xAngle = xAngleTemp + (vCurPos.x - vLastPos.x) * 180 / Screen.width;
+                yAngle = (yAngleTemp + (vCurPos.y - vLastPos.y) * 90 * 3f / Screen.height) * -1.0f;
                 // x축 각과 y축 각을 최초 입력 시 좌표와 이동할 때의 좌표의 차이(벡터)를 스크린 비율에 맞게 변경 후 최종 저장
 
                 // 이 코드는 안 씀
@@ -300,15 +304,18 @@ public class PlayerController : MonoBehaviour
                     Debug.DrawLine(ray.origin, hit.point, Color.red, 0.5f);
                     // object와 충돌했을 경우 경로를 빨간색으로 표시(Debug용) 정식 출시 시 삭제 필요
 
-                    HitObject = hit.collider.gameObject;
+                   // HitObject = hit.collider.gameObject;
+                    HitObject = hit.transform.gameObject;
                     // hit 중 gameOjbect만 저장
 
                     // LastHitObj = HitObject;
                     // 나중에 touch를 뗐을 때를 위해 마지막에 Hit된 오브젝트 갱신
 
-                    if(HitObject.name == "Wire_Plus_Start") // 오브젝트의 이름이 PlusStart(빨간 핀)일 경우
+                    // if(HitObject.name == "Wire_Plus_Start") // 오브젝트의 이름이 PlusStart(빨간 핀)일 경우
+                    if(HitObject.TryGetComponent<RedStartPin>(out RedStartPin redStartPin))
                     {
-                        if(HitObject.GetComponent<RedStartPin>().GetIsConneted()) return;
+                        // if(HitObject.GetComponent<RedStartPin>().GetIsConneted()) return;
+                        if(redStartPin.GetIsConneted()) return;
                         toDrag = HitObject.transform;
                         dist = hit.transform.position.z - Camera.main.transform.position.z;
                         vec = new Vector3(touch.position.x, touch.position.y, dist);
@@ -326,9 +333,11 @@ public class PlayerController : MonoBehaviour
                         // 카메라 제어 불가능으로 설정
                     }
 
-                    else if(HitObject.name == "Wire_Minus_Start") // 오브젝트의 이름이 MinusStart(검정 핀)일 경우 
+                    // else if(HitObject.name == "Wire_Minus_Start") // 오브젝트의 이름이 MinusStart(검정 핀)일 경우 
+                    else if(HitObject.TryGetComponent<BlackStartPin>(out BlackStartPin blackStartPin))
                     {
-                        if(HitObject.GetComponent<BlackStartPin>().GetIsConneted()) return;
+                        // if(HitObject.GetComponent<BlackStartPin>().GetIsConneted()) return;
+                        if(blackStartPin.GetIsConneted()) return;
                         toDrag = HitObject.transform;
                         dist = hit.transform.position.z - Camera.main.transform.position.z;
                         vec = new Vector3(touch.position.x, touch.position.y, dist);
@@ -345,9 +354,11 @@ public class PlayerController : MonoBehaviour
                         // 카메라 제어 불가능으로 설정
                     }
 
-                    else if(HitObject.name == "ON_OFF_Sub") // 오브젝트의 이름이 전원 버튼일 경우
+                    // else if(HitObject.name == "ON_OFF_Sub") // 오브젝트의 이름이 전원 버튼일 경우
+                    else if(HitObject.TryGetComponent<OnOffSub>(out OnOffSub onOffSub))
                     {
-                        HitObject.GetComponent<OnOffSub>().OnInteract();
+                      //  HitObject.GetComponent<OnOffSub>().OnInteract();
+                        onOffSub.OnInteract();
                         // 사용자가 Interaction을 했을 때의 스크립트 실행
 
                       //  bBtnClicked = true;
@@ -358,9 +369,11 @@ public class PlayerController : MonoBehaviour
                         // 카메라 제어 불가능으로 설정
                     }
 
-                    else if(HitObject.name == "ON_OFF_Main") // 오브젝트의 이름이 전원 스위치일 경우
+                    //else if(HitObject.name == "ON_OFF_Main") // 오브젝트의 이름이 전원 스위치일 경우
+                    else if(HitObject.TryGetComponent<OnOffMain>(out OnOffMain onOffMain))
                     {
-                        HitObject.GetComponent<OnOffMain>().OnInteract();
+                       // HitObject.GetComponent<OnOffMain>().OnInteract();
+                        onOffMain.OnInteract();
                         // 사용자가 Interaction을 했을 때의 스크립트 실행
 
                         CurClick = whichClicked.PSMain;
@@ -375,9 +388,11 @@ public class PlayerController : MonoBehaviour
                      //   bIsItemClicked = true;
                     }
 
-                    else if(HitObject.name == "Reverse_Toggle") // 오브젝트의 이름이 극 전환 스위치일 경우
+                    // else if(HitObject.name == "Reverse_Toggle") // 오브젝트의 이름이 극 전환 스위치일 경우
+                    else if(HitObject.TryGetComponent<ReverseToggle>(out ReverseToggle reverseToggle))
                     {
-                        HitObject.GetComponent<ReverseToggle>().OnInteract();
+                        // HitObject.GetComponent<ReverseToggle>().OnInteract();
+                        reverseToggle.OnInteract();
                         // 사용자가 Interaction을 했을 때의 스크립트 실행
 
                       //  bSwitchClicked = true;
@@ -392,7 +407,8 @@ public class PlayerController : MonoBehaviour
                       //  bIsItemClicked = true;
                     }
                     
-                    else if(HitObject.name == "Ampere_Wheel") // 오브젝트의 이름이 전압 조절기일 경우
+                    // else if(HitObject.name == "Ampere_Wheel") // 오브젝트의 이름이 전압 조절기일 경우
+                    else if(HitObject.TryGetComponent<AmpereWheel>(out AmpereWheel ampereWheel))
                     {
                         wheelLastPos = touch.position;
                         // HitObject.GetComponent<AmpereWheel>().SetCurPos(vTouchPos);
@@ -411,9 +427,11 @@ public class PlayerController : MonoBehaviour
                       //  bIsItemClicked = true;
                     }
 
-                    else if(HitObject.name == "TIP_ERed") // 오브젝트의 이름이 빨간 집게일 경우
+                    // else if(HitObject.name == "TIP_ERed") // 오브젝트의 이름이 빨간 집게일 경우
+                    else if(HitObject.TryGetComponent<RedEndPin>(out RedEndPin redEndPin))
                     {
-                        if(HitObject.GetComponent<RedEndPin>().GetIsConneted()) return;
+                        // if(HitObject.GetComponent<RedEndPin>().GetIsConneted()) return;
+                        if (redEndPin.GetIsConneted()) return;
                         toDrag = HitObject.transform;
                         dist = hit.transform.position.z - Camera.main.transform.position.z;
                         vec = new Vector3(touch.position.x, touch.position.y, dist);
@@ -429,9 +447,11 @@ public class PlayerController : MonoBehaviour
                         // 카메라 제어 불가
                     }
 
-                    else if(HitObject.name == "TIP_EBlack") // 오브젝트의 이름이 검정 집게일 경우
+                    // else if(HitObject.name == "TIP_EBlack") // 오브젝트의 이름이 검정 집게일 경우
+                    else if(HitObject.TryGetComponent<BlackEndPin>(out BlackEndPin blackEndPin))
                     {
-                        if(HitObject.GetComponent<BlackEndPin>().GetIsConneted()) return;
+                        // if(HitObject.GetComponent<BlackEndPin>().GetIsConneted()) return;
+                        if(blackEndPin.GetIsConneted()) return;
                         toDrag = HitObject.transform;
                         dist = hit.transform.position.z - Camera.main.transform.position.z;
                         vec = new Vector3(touch.position.x, touch.position.y, dist);
@@ -447,6 +467,10 @@ public class PlayerController : MonoBehaviour
                         // 카메라 제어 불가
                     }
                     // hit.collider.gameObject.OnInteract();
+                    else // 여기에 있는 거 안 눌렀으면 카메라 제어 가능하게
+                    {
+                        bIsCameraControl = true;
+                    }
                 } 
                 else
                 {
@@ -468,9 +492,11 @@ public class PlayerController : MonoBehaviour
                     // LastHitObj = HitObject; 
                     // 터치를 뗐을 때의 트리거를 작동 시키기 위해 LastHitObj에도 저장
 
-                    if(/* HitObject.name == "ON_OFF_Sub" || */ CurClick == whichClicked.PSSub) // 맞은 객체의 이름이 전원 장치의 Sub 버튼일 경우
+                    // if(/* HitObject.name == "ON_OFF_Sub" || */ CurClick == whichClicked.PSSub) // 맞은 객체의 이름이 전원 장치의 Sub 버튼일 경우
+                    if(HitObject.TryGetComponent<OnOffSub>(out OnOffSub onOffSub))
                     {
-                        HitObject.GetComponent<OnOffSub>().OnInteract(); 
+                        // HitObject.GetComponent<OnOffSub>().OnInteract(); 
+                        onOffSub.OnInteract();
                         // 해당 객체의 인터렉트 메서드 실행
 
                         CurClick = whichClicked.PSSub;
@@ -497,9 +523,13 @@ public class PlayerController : MonoBehaviour
 
                     // LastHitObj = HitObject; 
                     // 터치를 뗐을 때의 트리거를 작동 시키기 위해 LastHitObj에도 저장
-                    if(CurClick == whichClicked.SRed) // 현재 선택한 오브젝트의 이름이 빨간 핀일 경우
+                    // if(CurClick == whichClicked.SRed) // 현재 선택한 오브젝트의 이름이 빨간 핀일 경우
+                    if(HitObject.TryGetComponent<RedStartPin>(out RedStartPin redStartPin))
                     {
-                        if(HitObject.GetComponent<RedStartPin>().GetIsConneted()) {
+                        // if(HitObject.GetComponent<RedStartPin>().GetIsConneted()) 
+                        if(redStartPin.GetIsConneted())
+                        {
+                            HitObject = null;
                             CurClick = whichClicked.None;
                             // bIsCameraControl = true;
                             return;
@@ -515,9 +545,13 @@ public class PlayerController : MonoBehaviour
                         // 카메라 제어 불가
                     }
 
-                    else if(CurClick == whichClicked.SBlack)
+                    // else if(CurClick == whichClicked.SBlack)
+                    else if(HitObject.TryGetComponent<BlackStartPin>(out BlackStartPin blackStartPin))
                     {
-                        if(HitObject.GetComponent<BlackStartPin>().GetIsConneted()) {
+                        // if(HitObject.GetComponent<BlackStartPin>().GetIsConneted()) 
+                        if(blackStartPin.GetIsConneted())
+                        {
+                            HitObject = null;
                             CurClick = whichClicked.None;
                             // bIsCameraControl = true;
                             return;
@@ -533,14 +567,16 @@ public class PlayerController : MonoBehaviour
                         // 카메라 제어 불가
                     }
 
-                    else if(CurClick == whichClicked.PSWheel) // 현재 선택한 오브젝트의 이름이 전압 조절기일 경우
+                    // else if(CurClick == whichClicked.PSWheel) // 현재 선택한 오브젝트의 이름이 전압 조절기일 경우
+                    else if(HitObject.TryGetComponent<AmpereWheel>(out AmpereWheel ampereWheel))
                     {
                         wheelCurPos = touch.position;
                         Vector2 dir = wheelLastPos - wheelCurPos;
                         wheelAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
                         wheelAngle *= -1;
                         wheelAngle = Mathf.Clamp(wheelAngle, -360.0f, 360.0f);
-                        HitObject.GetComponent<AmpereWheel>().SetAngle(wheelAngle);
+                        // HitObject.GetComponent<AmpereWheel>().SetAngle(wheelAngle);
+                        ampereWheel.SetAngle(wheelAngle);
                         // HitObject.GetComponent<AmpereWheel>().OnInteract();
                         // // 사용자가 Interaction을 했을 때의 스크립트 실행
                         // HitObject.GetComponent<AmpereWheel>().SetCurPos(vTouchPos);
@@ -553,11 +589,15 @@ public class PlayerController : MonoBehaviour
                       //  bIsItemClicked = true;
                     }
 
-                    else if(CurClick == whichClicked.ERed) // 현재 선택한 오브젝트의 이름이 빨간 집게일 경우
+                    // else if(CurClick == whichClicked.ERed) // 현재 선택한 오브젝트의 이름이 빨간 집게일 경우
+                    else if(HitObject.TryGetComponent<RedEndPin>(out RedEndPin redEndPin))
                     {
                         // // 사용자가 Interaction 했을 때의 스크립트 실행
-                        if(HitObject.GetComponent<RedEndPin>().GetIsConneted()) {
+                        // if(HitObject.GetComponent<RedEndPin>().GetIsConneted()) 
+                        if(redEndPin.GetIsConneted())
+                        {
                             CurClick = whichClicked.None;
+                            HitObject = null;
                             // bIsCameraControl = true;
                             return;
                         }
@@ -573,10 +613,14 @@ public class PlayerController : MonoBehaviour
                         
                     }
 
-                    else if(CurClick == whichClicked.EBlack) // 현재 선택한 오브젝트의 이름이 검정 집게일 경우
+                    // else if(CurClick == whichClicked.EBlack) // 현재 선택한 오브젝트의 이름이 검정 집게일 경우
+                    else if(HitObject.TryGetComponent<BlackEndPin>(out BlackEndPin blackEndPin))
                     {
-                        if(HitObject.GetComponent<BlackEndPin>().GetIsConneted()) {
+                        // if(HitObject.GetComponent<BlackEndPin>().GetIsConneted()) 
+                        if(blackEndPin.GetIsConneted())
+                        {
                             CurClick = whichClicked.None;
+                            HitObject = null;
                             return;
                         }
                         vec = new Vector3(Input.mousePosition.x, Input.mousePosition.y, dist);
@@ -594,62 +638,65 @@ public class PlayerController : MonoBehaviour
 
             else if(touch.phase == TouchPhase.Ended) // 터치를 뗐을 때
             {
-                // switch(CurClick)
-                // {
-                //     case whichClicked.PSSub:
-                //     {
-                //         HitObject.GetComponent<OnOffSub>().OffInteract(); // Sub 버튼의 스크립트 실행
-                //         CurClick = whichClicked.None;
-                //         break;
-                //     }
-
-                // }
-                if(CurClick == whichClicked.PSSub) // 전원 장치의 Sub 버튼을 눌렀을 때 작동
+                // if(CurClick == whichClicked.PSSub) // 전원 장치의 Sub 버튼을 눌렀을 때 작동
+                if(HitObject.TryGetComponent<OnOffSub>(out OnOffSub onOffSub))
                 {
-                    HitObject.GetComponent<OnOffSub>().OffInteract(); // Sub 버튼의 스크립트 실행
+                    // HitObject.GetComponent<OnOffSub>().OffInteract(); // Sub 버튼의 스크립트 실행
+                    onOffSub.OffInteract();
                    // bBtnClicked = false; // false로 reset
-                   HitObject = null;
+                    HitObject = null;
                 }
 
-                else if(CurClick == whichClicked.PSWheel) // 아마 안 쓸 듯. 일단 나둠
+                // else if(CurClick == whichClicked.PSWheel) // 아마 안 쓸 듯. 일단 나둠
+                else if(HitObject.TryGetComponent<AmpereWheel>(out AmpereWheel ampereWheel))
                 {
                     wheelLastPos = wheelCurPos;
-                    HitObject.GetComponent<AmpereWheel>().SetLastRotate();
+                    // HitObject.GetComponent<AmpereWheel>().SetLastRotate();
+                    ampereWheel.SetLastRotate();
                     dragging = false;
                     HitObject = null;
                   //  HitObject.GetComponent<AmpereWheel>().OffInteract();
                   //  bWheelClicked = false;
                 }
 
-                else if(dragging && CurClick == whichClicked.SRed) // 마지막까지 터치했던 것이 빨간 핀일 경우
+                // else if(dragging && CurClick == whichClicked.SRed) // 마지막까지 터치했던 것이 빨간 핀일 경우
+                else if(dragging && HitObject.TryGetComponent<RedStartPin>(out RedStartPin redStartPin))
                 {
-                    if(!HitObject.GetComponent<RedStartPin>().GetIsConneted())
+                    // if(!HitObject.GetComponent<RedStartPin>().GetIsConneted())
+                    if(!redStartPin.GetIsConneted())
                         HitObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 90));
                     
                     dragging = false;
                     HitObject = null;
                 }
 
-                else if(dragging && CurClick == whichClicked.SBlack) // 마지막까지 터치했던 것이 검정 핀일 경우
+                // else if(dragging && CurClick == whichClicked.SBlack) // 마지막까지 터치했던 것이 검정 핀일 경우
+                else if(dragging && HitObject.TryGetComponent<BlackStartPin>(out BlackStartPin blackStartPin))
                 {
-                    if(!HitObject.GetComponent<BlackStartPin>().GetIsConneted())
+                    // if(!HitObject.GetComponent<BlackStartPin>().GetIsConneted())
+                    if(!blackStartPin.GetIsConneted())
                         HitObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 90));
                     
                     dragging = false;
                     HitObject = null;
                 }
 
-                else if(dragging && CurClick == whichClicked.ERed) // 마지막까지 터치했던 것이 빨간 집게일 경우
+                // else if(dragging && CurClick == whichClicked.ERed) // 마지막까지 터치했던 것이 빨간 집게일 경우
+                else if(dragging && HitObject.TryGetComponent<RedEndPin>(out RedEndPin redEndPin))
                 {
-                    if(!HitObject.GetComponent<RedEndPin>().GetIsConneted())
+                    // if(!HitObject.GetComponent<RedEndPin>().GetIsConneted())
+                    if(!redEndPin.GetIsConneted())
                         HitObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
                     
                     dragging = false;
                     HitObject = null;
                 }
-                else if(dragging && CurClick == whichClicked.EBlack) // 마지막까지 터치했던 것이 검정 집게일 경우
+
+                // else if(dragging && CurClick == whichClicked.EBlack) // 마지막까지 터치했던 것이 검정 집게일 경우
+                else if(dragging && HitObject.TryGetComponent<BlackEndPin>(out BlackEndPin blackEndPin))
                 {
-                    if(!HitObject.GetComponent<BlackEndPin>().GetIsConneted())
+                    // if(!HitObject.GetComponent<BlackEndPin>().GetIsConneted())
+                    if(!blackEndPin.GetIsConneted())
                         HitObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
 
                     dragging = false;

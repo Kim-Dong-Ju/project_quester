@@ -4,7 +4,6 @@ using UnityEngine;
 
 public class RedEndPin : MonoBehaviour
 {
-    public GameObject RedStart;
     bool bIsConnected = false;
     //bool bRotate = false;
     bool bIsPowered = false;

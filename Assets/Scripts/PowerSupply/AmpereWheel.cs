@@ -11,7 +11,7 @@ public class AmpereWheel : MonoBehaviour
     private Quaternion rotate;
     private float wheelAngle;
     private bool bIsLower = false, bIsOver = false;
-    float volt = 0.0f;
+    float Ampere = 0.0f;
  //   float testAngle = 0.0f;
     // Start is called before the first frame update
     
@@ -32,7 +32,7 @@ public class AmpereWheel : MonoBehaviour
         Quaternion limitedRotation = Quaternion.AngleAxis(wheelAngle, Vector3.forward);
         transform.rotation = rotate * limitedRotation;
 
-        SetVoltage();
+        SetAmpere();
     }
 
     public void SetLastRotate()
@@ -40,22 +40,22 @@ public class AmpereWheel : MonoBehaviour
         rotate = transform.rotation;
     }
 
-    public void SetVoltage()
+    public void SetAmpere()
     {
         float curRotate = transform.localEulerAngles.y;
         Debug.Log(curRotate);
         float checkVolt = curRotate / 100;
-        if(volt == 3.59f && checkVolt == 0.0f) bIsOver = true;
-        if(volt == 0.0f && checkVolt == 3.59f) bIsLower = true;
-        powerSupply.SetIsUp((checkVolt >= volt)? true : false);
+        if(Ampere == 3.59f && checkVolt == 0.0f) bIsOver = true;
+        if(Ampere == 0.0f && checkVolt == 3.59f) bIsLower = true;
+        powerSupply.SetIsUp((checkVolt >= Ampere)? true : false);
         //if(lastVolt == 3.59f && checkVolt == 0.0f) bIsOver = true;
        // if(lastVolt == 0.0f && checkVolt == 3.59f) bIsLower = true;
         if(bIsOver || bIsLower) return;
        // lastVolt = checkVolt;
         //transform.parent.gameObject.GetComponent<PowerSupply>().SetVoltage(lastVolt);
 
-        volt = checkVolt;
-        powerSupply.SetVoltage(volt);
+        Ampere = checkVolt;
+        powerSupply.SetAmpere(Ampere);
         // base.SetVoltage();
     }
     // public void SetCurPos(Vector3 vTouchPos)

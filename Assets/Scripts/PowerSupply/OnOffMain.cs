@@ -5,16 +5,12 @@ using UnityEngine;
 public class OnOffMain : MonoBehaviour
 {
     private bool bIsPowered = false;
-    GameObject ParentObj;
-    GameObject WireRed;
-    GameObject WireBlack;
+    PowerSupply powerSupply;
     Vector3 SwitchRotation = new Vector3(-90, 0, 180);
     // Start is called before the first frame update
     void Start()
     {
-        ParentObj = transform.parent.gameObject;
-        WireRed = ParentObj.transform.Find("Wire_Plus_Start").gameObject;
-        WireBlack = ParentObj.transform.Find("Wire_Minus_Start").gameObject;
+        powerSupply = transform.parent.gameObject.GetComponent<PowerSupply>();
     }
 
     // Update is called once per frame
@@ -33,7 +29,7 @@ public class OnOffMain : MonoBehaviour
     {
         bIsPowered = bValue;
         
-        ParentObj.GetComponent<PowerSupply>().SetIsMainOn(bIsPowered);
+        powerSupply.SetIsMainOn(bIsPowered);
         if(bIsPowered) SwitchRotation.x = -105;
         else SwitchRotation.x = -90;
         // WireRed.GetComponent<RedPin>().SetIsPowered(bIsPowered);

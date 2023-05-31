@@ -5,12 +5,12 @@ using UnityEngine;
 public class ReverseToggle : MonoBehaviour
 {
     private bool bIsSwapped = false;
-    GameObject ParentObj;
+    PowerSupply powerSupply;
     ToggleAnim anim;
     // // Start is called before the first frame update
     void Start()
     {
-        ParentObj = transform.parent.gameObject;
+        powerSupply = transform.parent.gameObject.GetComponent<PowerSupply>();
         anim = GetComponent<ToggleAnim>();
         anim.SetToggleAnim(false);
     }
@@ -24,7 +24,7 @@ public class ReverseToggle : MonoBehaviour
     {
         bIsSwapped = !bIsSwapped;
 
-        ParentObj.GetComponent<PowerSupply>().SetSwap(bIsSwapped);
+        powerSupply.SetSwap(bIsSwapped);
         anim.SetToggleAnim(bIsSwapped);
 
         // if(bIsSwapped)
@@ -36,15 +36,4 @@ public class ReverseToggle : MonoBehaviour
         //     transform.localRotation = Quaternion.Euler(new Vector3(105, 0, 0));
         // }
     }
-
-    // public override void SetSwap(bool bValue)
-    // {
-    //     base.SetSwap(bValue);
-        
-    // }
-
-    // public bool GetIsSwap()
-    // {
-    //     return bIsSwapped;
-    // }
 }
