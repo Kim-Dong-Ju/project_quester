@@ -11,11 +11,13 @@ public class CathodeRayRenderer : MonoBehaviour
 
     LineRenderer line_renderer;
     CBezier bezier;
+    Material mat;
 
     void Awake()
     {
         this.line_renderer = gameObject.GetComponent<LineRenderer>();
         this.bezier = gameObject.GetComponent<CBezier>();
+        this.mat = line_renderer.material;
         set_vertex_count(node_count + 1);
     }
     
@@ -32,5 +34,11 @@ public class CathodeRayRenderer : MonoBehaviour
     void set_vertex_count(int count)
     {
         this.line_renderer.positionCount = count;
+    }
+
+    public void SetIntensity(float intensity)
+    {
+        Color baseColor = mat.GetColor("_EmissionColor");
+        mat.SetColor("_EmissionColor", baseColor * intensity * 10);
     }
 }

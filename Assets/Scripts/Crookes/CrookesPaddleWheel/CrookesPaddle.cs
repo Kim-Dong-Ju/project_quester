@@ -59,9 +59,9 @@ public class CrookesPaddle : MonoBehaviour
         pinWheel.SetPinWheel(bIsPowered, bIsSwapped);
     }
 
-    public void SetAmpere(float fVolt)
+    public void SetAmpere(float fAmphere)
     {
-        Ampere = fVolt;
+        Ampere = fAmphere;
         pinWheel.SetAmpere(Ampere);
     }
 

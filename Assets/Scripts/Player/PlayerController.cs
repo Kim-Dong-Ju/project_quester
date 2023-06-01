@@ -37,8 +37,7 @@ public class PlayerController : MonoBehaviour
     private bool dragging = false;
     private Transform toDrag;
     public bool bIsCameraControl = false;
-    public float fPerspectZoomSpeed = 0.1f;
-    public float fOrthoZoomSpeed = 0.1f;
+    public float fZoomSpeed = 0.1f;
     
     // Camera Camera;
     void Start()
@@ -215,48 +214,80 @@ public class PlayerController : MonoBehaviour
             // 각 터치 데이터를 저장
             Vector2[] vTouchLastPosArr = new Vector2[3];
             
-            if(touch[0].phase == TouchPhase.Began || touch[1].phase == TouchPhase.Began || touch[2].phase == TouchPhase.Began)
-            {
-                vTouchLastPosArr[0] = touch[0].position - touch[0].deltaPosition;
-                vTouchLastPosArr[1] = touch[1].position - touch[1].deltaPosition;
-                vTouchLastPosArr[2] = touch[2].position - touch[2].deltaPosition;
-                // 각 터치에 대한 위치 좌표를 위치 변수에 저장
-                Vector2 LastVectorOne = vTouchLastPosArr[1] - vTouchLastPosArr[0];
-                Vector2 LastVectorTwo = vTouchLastPosArr[2] - vTouchLastPosArr[0];
-                // touch[0]->touch[1] 벡터(u)와 touch[0]->touch[2](v)의 벡터를 구함
-                fLastArea = Mathf.Abs(Vector3.Cross(LastVectorOne, LastVectorTwo).magnitude);
-                // 삼각형 넓이를 구하기 위해 두 벡터 사이의 각을 구하기 위해 외적(Cross Product)을 구함
-                // 외적: |u*v| = |u||v|sin(theta) // 삼각형 넓이 S = (1/2)|u||v|sin(theta)
+            vTouchLastPosArr[0] = touch[0].position - touch[0].deltaPosition;
+            vTouchLastPosArr[1] = touch[1].position - touch[1].deltaPosition;
+            vTouchLastPosArr[2] = touch[2].position - touch[2].deltaPosition;
+            // 각 터치에 대한 위치 좌표를 위치 변수에 저장
+            Vector2 LastVectorOne = vTouchLastPosArr[1] - vTouchLastPosArr[0];
+            Vector2 LastVectorTwo = vTouchLastPosArr[2] - vTouchLastPosArr[0];
+            // touch[0]->touch[1] 벡터(u)와 touch[0]->touch[2](v)의 벡터를 구함
+            fLastArea = Mathf.Abs(Vector3.Cross(LastVectorOne, LastVectorTwo).magnitude);
 
-             //   CurMode = cameraMode.Zoom;
+            Vector2 vectorOne = touch[1].position - touch[0].position;
+            Vector2 vectorTwo = touch[2].position - touch[0].position;
+            // 새로운 touch 값 touch[0]->touch[1] 벡터(u)와 touch[0]->touch[2](v)의 벡터를 구함
+            fNewArea = Mathf.Abs(Vector3.Cross(vectorOne, vectorTwo).magnitude);
+            // 두 벡터 사이의 외적을 구함
+
+            float vectorOneDeltaPos = (touch[1].deltaPosition - touch[0].deltaPosition).magnitude;
+            float vectorTwoDeltaPos = (touch[2].deltaPosition - touch[0].deltaPosition).magnitude;
+
+            float zoomModifier = (vectorOneDeltaPos - vectorTwoDeltaPos) * fZoomSpeed;
+
+            if(fLastArea > fNewArea)
+            {
+                transform.Translate(Vector3.back * zoomModifier * Time.deltaTime);
             }
-            else if(touch[0].phase == TouchPhase.Moved || touch[1].phase == TouchPhase.Moved || touch[2].phase == TouchPhase.Moved)
+            else if(fLastArea < fNewArea)
             {
-                Vector2 vectorOne = touch[1].position - touch[0].position;
-                Vector2 vectorTwo = touch[2].position - touch[0].position;
-                // 새로운 touch 값 touch[0]->touch[1] 벡터(u)와 touch[0]->touch[2](v)의 벡터를 구함
-                fNewArea = Mathf.Abs(Vector3.Cross(vectorOne, vectorTwo).magnitude);
-                // 두 벡터 사이의 외적을 구함
+                transform.Translate(Vector3.forward * zoomModifier * Time.deltaTime);
+            }
 
-                float deltaMagnitudeDiff = fLastArea - fNewArea;
-                // 두 삼각형의 넓이 차이를 구함. 음수가 나오면 손가락을 벌린 상태(줌인)
+
+        //         float deltaMagnitudeDiff = fLastArea - fNewArea;
+        //         // 두 삼각형의 넓이 차이를 구함. 음수가 나오면 손가락을 벌린 상태(줌인)
+        //     if(touch[0].phase == TouchPhase.Began || touch[1].phase == TouchPhase.Began || touch[2].phase == TouchPhase.Began)
+        //     {
+        //         vTouchLastPosArr[0] = touch[0].position - touch[0].deltaPosition;
+        //         vTouchLastPosArr[1] = touch[1].position - touch[1].deltaPosition;
+        //         vTouchLastPosArr[2] = touch[2].position - touch[2].deltaPosition;
+        //         // 각 터치에 대한 위치 좌표를 위치 변수에 저장
+        //         Vector2 LastVectorOne = vTouchLastPosArr[1] - vTouchLastPosArr[0];
+        //         Vector2 LastVectorTwo = vTouchLastPosArr[2] - vTouchLastPosArr[0];
+        //         // touch[0]->touch[1] 벡터(u)와 touch[0]->touch[2](v)의 벡터를 구함
+        //         fLastArea = Mathf.Abs(Vector3.Cross(LastVectorOne, LastVectorTwo).magnitude);
+        //         // 삼각형 넓이를 구하기 위해 두 벡터 사이의 각을 구하기 위해 외적(Cross Product)을 구함
+        //         // 외적: |u*v| = |u||v|sin(theta) // 삼각형 넓이 S = (1/2)|u||v|sin(theta)
+
+        //      //   CurMode = cameraMode.Zoom;
+        //     }
+        //     else if(touch[0].phase == TouchPhase.Moved || touch[1].phase == TouchPhase.Moved || touch[2].phase == TouchPhase.Moved)
+        //     {
+        //         Vector2 vectorOne = touch[1].position - touch[0].position;
+        //         Vector2 vectorTwo = touch[2].position - touch[0].position;
+        //         // 새로운 touch 값 touch[0]->touch[1] 벡터(u)와 touch[0]->touch[2](v)의 벡터를 구함
+        //         fNewArea = Mathf.Abs(Vector3.Cross(vectorOne, vectorTwo).magnitude);
+        //         // 두 벡터 사이의 외적을 구함
+
+        //         float deltaMagnitudeDiff = fLastArea - fNewArea;
+        //         // 두 삼각형의 넓이 차이를 구함. 음수가 나오면 손가락을 벌린 상태(줌인)
             
-
-                if(GetComponent<Camera>().orthographic) // if Viewing Projection is Orthographic Mode(2D)
-                {
-                    GetComponent<Camera>().orthographicSize += (deltaMagnitudeDiff * fOrthoZoomSpeed * Time.deltaTime);
-                    GetComponent<Camera>().orthographicSize = Mathf.Max(GetComponent<Camera>().orthographicSize, 5.0f);
-                }
-                else // if Viewing Projection is Perspective Mode(3D)
-                {
-                    GetComponent<Camera>().fieldOfView += (deltaMagnitudeDiff * fPerspectZoomSpeed * Time.deltaTime);
-                    // Field of View의 값을 변경
-                    GetComponent<Camera>().fieldOfView = Mathf.Clamp(GetComponent<Camera>().fieldOfView, 5.0f, 100.0f);
-                    // Field of View 값을 5에서 100 사이로 제한
-                }
-                fLastArea = fNewArea;
-           //     CurMode = cameraMode.Zoom;
-            }
+                
+        //         // if(GetComponent<Camera>().orthographic) // if Viewing Projection is Orthographic Mode(2D)
+        //         // {
+        //         //     GetComponent<Camera>().orthographicSize += (deltaMagnitudeDiff * fZoomSpeed * Time.deltaTime);
+        //         //     GetComponent<Camera>().orthographicSize = Mathf.Max(GetComponent<Camera>().orthographicSize, 5.0f);
+        //         // }
+        //         // else // if Viewing Projection is Perspective Mode(3D)
+        //         // {
+        //         //     GetComponent<Camera>().fieldOfView += (deltaMagnitudeDiff * fZoomSpeed * Time.deltaTime);
+        //         //     // Field of View의 값을 변경
+        //         //     GetComponent<Camera>().fieldOfView = Mathf.Clamp(GetComponent<Camera>().fieldOfView, 5.0f, 100.0f);
+        //         //     // Field of View 값을 5에서 100 사이로 제한
+        //         // }
+        //         fLastArea = fNewArea;
+        //    //     CurMode = cameraMode.Zoom;
+        //     }
             // else if(touch[0].phase == TouchPhase.Ended || touch[0].phase == TouchPhase.Canceled || touch[1].phase == TouchPhase.Ended || touch[1].phase == TouchPhase.Canceled || touch[2].phase == TouchPhase.Ended || touch[2].phase == TouchPhase.Canceled)
             // {
             //    // fLastArea = fNewArea;

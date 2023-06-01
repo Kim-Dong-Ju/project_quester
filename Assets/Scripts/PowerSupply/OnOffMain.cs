@@ -14,10 +14,10 @@ public class OnOffMain : MonoBehaviour
     }
 
     // Update is called once per frame
-    // void Update()
-    // {
+    void LateUpdate()
+    {
         
-    // }
+    }
 
     public void OnInteract()
     {

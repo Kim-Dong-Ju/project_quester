@@ -71,9 +71,9 @@ public class CrookesCross : MonoBehaviour
             bIsSwapped = bValue;
     }
 
-    public void SetAmpere(float fVolt)
+    public void SetAmpere(float fAmphere)
     {
-        Ampere = fVolt;
+        Ampere = fAmphere;
     }
 
     private void OnTriggerEnter(Collider collider)

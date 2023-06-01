@@ -400,7 +400,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 96b1f029e55bc6b48bb9b1fce752c7ec, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.49920005
+      value: 0.18820003
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 96b1f029e55bc6b48bb9b1fce752c7ec, type: 3}
       propertyPath: m_LocalRotation.w
@@ -1421,7 +1421,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 527028781}
   m_LocalRotation: {x: 0, y: 0.7071068, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 1.647, y: 0.501, z: 0.35}
+  m_LocalPosition: {x: 0.0064, y: 0.501, z: 0.35}
   m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_Children:
   - {fileID: 2111032861}
@@ -1445,8 +1445,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PowerSupply: {fileID: 1251302975}
-  PlusWire: {fileID: 556430016}
-  MinusWire: {fileID: 143382918}
 --- !u!65 &527028785
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -1701,7 +1699,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e7dea1f894aead4685e06a65bbb6cd6, type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0.503
+      value: 0.192
       objectReference: {fileID: 0}
     - target: {fileID: -8679921383154817045, guid: 1e7dea1f894aead4685e06a65bbb6cd6, type: 3}
       propertyPath: m_LocalRotation.w
@@ -2180,7 +2178,8 @@ LineRenderer:
   m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
-  m_Materials: []
+  m_Materials:
+  - {fileID: 2100000, guid: 5bf24c5dcf142d549a3e8f9b3769f3fa, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -2201,9 +2200,7 @@ LineRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
-  m_Positions:
-  - {x: 0.00688, y: 0.795, z: 0.5782}
-  - {x: 0.00579997, y: 0.7965, z: 0.0877}
+  m_Positions: []
   m_Parameters:
     serializedVersion: 3
     widthMultiplier: 1
@@ -2211,8 +2208,8 @@ LineRenderer:
       serializedVersion: 2
       m_Curve:
       - serializedVersion: 3
-        time: 0.029411763
-        value: 0.008620679
+        time: 0
+        value: 0.008621216
         inSlope: 0
         outSlope: 0
         tangentMode: 0
@@ -2550,7 +2547,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.05, y: 0.05, z: 0.1}
+  m_Size: {x: 0.1, y: 0.05, z: 0.1}
   m_Center: {x: 0, y: 0, z: -0.03}
 --- !u!23 &965386480
 MeshRenderer:
@@ -2751,7 +2748,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.0007, y: 0.0005, z: 0.0004}
+  m_Size: {x: 0.002, y: 0.0005, z: 0.0004}
   m_Center: {x: 0.0001, y: 0, z: 0}
 --- !u!23 &1109811424
 MeshRenderer:
@@ -3123,7 +3120,6 @@ GameObject:
   - component: {fileID: 1295048128}
   - component: {fileID: 1295048130}
   - component: {fileID: 1295048129}
-  - component: {fileID: 1295048131}
   m_Layer: 6
   m_Name: CrookesTube
   m_TagString: Untagged
@@ -3195,21 +3191,6 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1295048127}
   m_Mesh: {fileID: 8302757715570288593, guid: 3fe2780997dde10468ba3e4e4d4f0298, type: 3}
---- !u!114 &1295048131
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1295048127}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 299793d9d3b8bd541bc6f1bcb9c0a56e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  PowerSupply: {fileID: 1251302975}
-  PlusWire: {fileID: 556430016}
-  MinusWire: {fileID: 143382918}
 --- !u!1 &1312990866
 GameObject:
   m_ObjectHideFlags: 0
@@ -3729,8 +3710,7 @@ MonoBehaviour:
   wheelCurPos: {x: 0, y: 0}
   check: 1
   bIsCameraControl: 0
-  fPerspectZoomSpeed: 0.1
-  fOrthoZoomSpeed: 0.1
+  fZoomSpeed: 0.1
 --- !u!65 &1779377079
 BoxCollider:
   m_ObjectHideFlags: 0
@@ -4399,7 +4379,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2058112532}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.00005, y: 0.00022, z: -0.4889}
+  m_LocalPosition: {x: 0, y: 0, z: -0.4876}
   m_LocalScale: {x: 0.0001, y: 0.0001, z: 0.0001}
   m_Children: []
   m_Father: {fileID: 1364640124}
@@ -4860,7 +4840,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2124079120}
   m_LocalRotation: {x: 0, y: 1, z: 0, w: 0}
-  m_LocalPosition: {x: -0.03, y: 0.513, z: 0.412}
+  m_LocalPosition: {x: 1.62, y: 0.513, z: 0.412}
   m_LocalScale: {x: 1.2, y: 1.2, z: 1.2}
   m_Children:
   - {fileID: 623360670}
@@ -4957,7 +4937,7 @@ BoxCollider:
   m_IsTrigger: 0
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.0007, y: 0.0005, z: 0.0003}
+  m_Size: {x: 0.002, y: 0.0005, z: 0.0004}
   m_Center: {x: 0, y: 0, z: 0}
 --- !u!23 &2134958868
 MeshRenderer:
