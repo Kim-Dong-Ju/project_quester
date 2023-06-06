@@ -1,3 +1,4 @@
+// 라인 렌더링용 머티리얼 관리 코드
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

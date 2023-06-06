@@ -1,3 +1,4 @@
+// CBezier를 통해 그린 베지어 곡선을 토대로 사이에 Node들을 만들어 라인 렌더링을 하는 코드
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

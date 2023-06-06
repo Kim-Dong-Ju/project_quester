@@ -30,7 +30,7 @@ public class OnOffMain : MonoBehaviour
         bIsPowered = bValue;
         
         powerSupply.SetIsMainOn(bIsPowered);
-        if(bIsPowered) SwitchRotation.x = -105;
+        if(bIsPowered) SwitchRotation.x = -120;
         else SwitchRotation.x = -90;
         // WireRed.GetComponent<RedPin>().SetIsPowered(bIsPowered);
         // WireRed.GetComponent<RedPin>().SetIsPowered(bIsPowered);

@@ -41,24 +41,25 @@
      <Compile Include="Assets\Scripts\PowerSupply\OnOffMain.cs" />
      <Compile Include="Assets\Scripts\PowerSupply\AmpereWheel.cs" />
      <Compile Include="Assets\Scripts\Crookes\CrookesCross\CrookesCross.cs" />
-     <Compile Include="Assets\Scripts\Player\CameraControl.cs" />
+     <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\BezierPointController.cs" />
      <Compile Include="Assets\Scripts\Pins\RedEndPin.cs" />
      <Compile Include="Assets\Scripts\Crookes\CrookesPaddleWheel\CrookesPaddle.cs" />
+     <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\AnimatedCRs.cs" />
+     <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\CathodeRayRenderer.cs" />
      <Compile Include="Assets\Scripts\Pins\BlackStartPin.cs" />
      <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\CrookesMagnetic.cs" />
      <Compile Include="Assets\Scripts\PowerSupply\ToggleAnim.cs" />
+     <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\CathodeRay.cs" />
      <Compile Include="Assets\Scripts\PowerSupply\ReverseToggle.cs" />
      <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\CBezier.cs" />
      <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
      <Compile Include="Assets\Scripts\PowerSupply\OnOffSub.cs" />
      <Compile Include="Assets\Scripts\PowerSupply\NeedleAnim.cs" />
      <Compile Include="Assets\Scripts\PowerSupply\PowerSupply.cs" />
-     <Compile Include="Assets\Scripts\Base\ElectronicTool.cs" />
+     <Compile Include="Assets\Scripts\Magnetic\Magnetic.cs" />
      <Compile Include="Assets\Scripts\Crookes\CrookesPaddleWheel\CrookesWheel.cs" />
      <Compile Include="Assets\test.cs" />
-     <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\CathodeRayRenderer.cs" />
-     <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\AnimatedCRs.cs" />
-     <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\CathodeRay.cs" />
+     <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\BezierPointMinus.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.40f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>

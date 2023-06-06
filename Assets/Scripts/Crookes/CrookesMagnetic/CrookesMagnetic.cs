@@ -14,13 +14,17 @@ public class CrookesMagnetic : MonoBehaviour
     private float Ampere = 0.0f;
     LineRenderer CathodeRay;
     CathodeRayRenderer ray_renderer;
-
+    Light CathodeRayMinus, CathodeRayPlus;
     // Start is called before the first frame update
     void Start()
     {
         CathodeRay = GameObject.Find("BazierLaser").GetComponent<LineRenderer>();
         ray_renderer = GameObject.Find("BazierLaser").GetComponent<CathodeRayRenderer>();
+        CathodeRayMinus = transform.Find("CathodeRay_Minus").gameObject.GetComponent<Light>();
+        CathodeRayPlus = transform.Find("CathodeRay_Plus").gameObject.GetComponent<Light>();
         CathodeRay.enabled = false;
+        CathodeRayMinus.intensity = 0;
+        CathodeRayPlus.intensity = 0;
     }
 
     // Update is called once per frame
@@ -56,6 +60,7 @@ public class CrookesMagnetic : MonoBehaviour
         {
             CathodeRay.enabled = false;
         }
+        SetLight();
     }
     
     public void SetIsSwapped(bool bValue)
@@ -67,6 +72,7 @@ public class CrookesMagnetic : MonoBehaviour
 
         if(bPConnect && bMConnect)
             bIsSwapped = bValue;
+        SetLight();
     }
 
     public void SetAmpere(float fAmphere)
@@ -75,22 +81,46 @@ public class CrookesMagnetic : MonoBehaviour
         ray_renderer.SetIntensity(Ampere);
     }
 
+    private void SetLight()
+    {
+        if(bIsPowered)
+        {
+            if(bIsSwapped) // Toggle을 눌렀을 때. 즉 검정핀이 Plus극이, 빨간핀이 Minus극이 되었을 때
+            {
+                CathodeRayPlus.intensity = 0;
+                CathodeRayMinus.intensity = Ampere;
+                CathodeRay.enabled = false;
+            }
+            else
+            {
+                CathodeRayMinus.intensity = 0;
+                CathodeRayPlus.intensity = Ampere;
+                CathodeRay.enabled = true;
+            }
+        }
+        else
+        {
+            CathodeRayMinus.intensity = 0;
+            CathodeRayPlus.intensity = 0;
+        }
+    }
+
     private void OnTriggerEnter(Collider collider)
     {
         if(collider.gameObject.TryGetComponent<RedEndPin>(out RedEndPin redEndPin))
         {
             PlusWire = redEndPin;
             collider.gameObject.transform.SetParent(this.transform);
-            collider.gameObject.transform.localPosition = new Vector3(0.2729f, 0.2451f, -0.0024f);
-            collider.gameObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 90, -90));
+            collider.gameObject.transform.localPosition = new Vector3(-0.2648999f, 0.2475f, -0.002125005f);
+            collider.gameObject.transform.localRotation = Quaternion.Euler(new Vector3(0, -90, 90));
             redEndPin.SetIsConneted(true);
         }
         else if(collider.gameObject.TryGetComponent<BlackEndPin>(out BlackEndPin blackEndPin))
         {
             MinusWire = blackEndPin;
             collider.gameObject.transform.SetParent(this.transform);
-            collider.gameObject.transform.localPosition = new Vector3(-0.2648999f, 0.2475f, -0.002125005f);
-            collider.gameObject.transform.localRotation = Quaternion.Euler(new Vector3(0, -90, 90));
+            collider.gameObject.transform.localPosition = new Vector3(0.2729f, 0.2451f, -0.0024f);
+            collider.gameObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 90, -90));
             blackEndPin.SetIsConneted(true);
         }
     }

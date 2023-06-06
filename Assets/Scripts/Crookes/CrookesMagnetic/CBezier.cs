@@ -1,4 +1,5 @@
 // 크룩스관 슬릿입 휘어지는 빛을 구현하기 위한 스크립트
+// 베지어 곡선을 그리는 스크립트
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

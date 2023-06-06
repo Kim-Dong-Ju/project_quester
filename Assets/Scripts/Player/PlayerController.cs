@@ -234,64 +234,14 @@ public class PlayerController : MonoBehaviour
 
             float zoomModifier = (vectorOneDeltaPos - vectorTwoDeltaPos) * fZoomSpeed;
 
-            if(fLastArea > fNewArea)
+            if(fLastArea < fNewArea)
             {
                 transform.Translate(Vector3.back * zoomModifier * Time.deltaTime);
             }
-            else if(fLastArea < fNewArea)
+            else if(fLastArea > fNewArea)
             {
                 transform.Translate(Vector3.forward * zoomModifier * Time.deltaTime);
             }
-
-
-        //         float deltaMagnitudeDiff = fLastArea - fNewArea;
-        //         // 두 삼각형의 넓이 차이를 구함. 음수가 나오면 손가락을 벌린 상태(줌인)
-        //     if(touch[0].phase == TouchPhase.Began || touch[1].phase == TouchPhase.Began || touch[2].phase == TouchPhase.Began)
-        //     {
-        //         vTouchLastPosArr[0] = touch[0].position - touch[0].deltaPosition;
-        //         vTouchLastPosArr[1] = touch[1].position - touch[1].deltaPosition;
-        //         vTouchLastPosArr[2] = touch[2].position - touch[2].deltaPosition;
-        //         // 각 터치에 대한 위치 좌표를 위치 변수에 저장
-        //         Vector2 LastVectorOne = vTouchLastPosArr[1] - vTouchLastPosArr[0];
-        //         Vector2 LastVectorTwo = vTouchLastPosArr[2] - vTouchLastPosArr[0];
-        //         // touch[0]->touch[1] 벡터(u)와 touch[0]->touch[2](v)의 벡터를 구함
-        //         fLastArea = Mathf.Abs(Vector3.Cross(LastVectorOne, LastVectorTwo).magnitude);
-        //         // 삼각형 넓이를 구하기 위해 두 벡터 사이의 각을 구하기 위해 외적(Cross Product)을 구함
-        //         // 외적: |u*v| = |u||v|sin(theta) // 삼각형 넓이 S = (1/2)|u||v|sin(theta)
-
-        //      //   CurMode = cameraMode.Zoom;
-        //     }
-        //     else if(touch[0].phase == TouchPhase.Moved || touch[1].phase == TouchPhase.Moved || touch[2].phase == TouchPhase.Moved)
-        //     {
-        //         Vector2 vectorOne = touch[1].position - touch[0].position;
-        //         Vector2 vectorTwo = touch[2].position - touch[0].position;
-        //         // 새로운 touch 값 touch[0]->touch[1] 벡터(u)와 touch[0]->touch[2](v)의 벡터를 구함
-        //         fNewArea = Mathf.Abs(Vector3.Cross(vectorOne, vectorTwo).magnitude);
-        //         // 두 벡터 사이의 외적을 구함
-
-        //         float deltaMagnitudeDiff = fLastArea - fNewArea;
-        //         // 두 삼각형의 넓이 차이를 구함. 음수가 나오면 손가락을 벌린 상태(줌인)
-            
-                
-        //         // if(GetComponent<Camera>().orthographic) // if Viewing Projection is Orthographic Mode(2D)
-        //         // {
-        //         //     GetComponent<Camera>().orthographicSize += (deltaMagnitudeDiff * fZoomSpeed * Time.deltaTime);
-        //         //     GetComponent<Camera>().orthographicSize = Mathf.Max(GetComponent<Camera>().orthographicSize, 5.0f);
-        //         // }
-        //         // else // if Viewing Projection is Perspective Mode(3D)
-        //         // {
-        //         //     GetComponent<Camera>().fieldOfView += (deltaMagnitudeDiff * fZoomSpeed * Time.deltaTime);
-        //         //     // Field of View의 값을 변경
-        //         //     GetComponent<Camera>().fieldOfView = Mathf.Clamp(GetComponent<Camera>().fieldOfView, 5.0f, 100.0f);
-        //         //     // Field of View 값을 5에서 100 사이로 제한
-        //         // }
-        //         fLastArea = fNewArea;
-        //    //     CurMode = cameraMode.Zoom;
-        //     }
-            // else if(touch[0].phase == TouchPhase.Ended || touch[0].phase == TouchPhase.Canceled || touch[1].phase == TouchPhase.Ended || touch[1].phase == TouchPhase.Canceled || touch[2].phase == TouchPhase.Ended || touch[2].phase == TouchPhase.Canceled)
-            // {
-            //    // fLastArea = fNewArea;
-            // }
         }
 
         else 
@@ -312,13 +262,13 @@ public class PlayerController : MonoBehaviour
             Touch touch = Input.GetTouch(0);
              // 0번 터치의 정보(현재 누르고 있는 터치에 대한 정보)
 
-            Vector3 vTouchPosToVec3 = new Vector3(touch.position.x, touch.position.y, 0);
+            Vector3 vTouchPos = new Vector3(touch.position.x, touch.position.y, 0);
             // 현재 화면을 터치하고 있는 위치를 3차원 공간으로 변형하여 저장
 
-            Vector3 vTouchPos = Camera.main.ScreenToWorldPoint(vTouchPosToVec3);
+            // Vector3 vTouchWorldPos = Camera.main.ScreenToWorldPoint(touch.position);
             // TouchPosToVec3를 현재 카메라가 비추고 있는 화면 내의 좌표값으로 사용할 수 있게 변환
 
-            Ray ray = Camera.main.ScreenPointToRay(vTouchPosToVec3);
+            Ray ray = Camera.main.ScreenPointToRay(vTouchPos);
             // 카메라로부터 터치한 공간까지 벡터를 Ray로 변환
 
             RaycastHit hit;
@@ -497,6 +447,19 @@ public class PlayerController : MonoBehaviour
                         bIsCameraControl = false;
                         // 카메라 제어 불가
                     }
+
+                    else if(HitObject.TryGetComponent<Magnetic>(out Magnetic magnetic))
+                    {
+                        toDrag = HitObject.transform;
+                        dist = hit.transform.position.z - Camera.main.transform.position.z;
+                        vec = new Vector3(touch.position.x, touch.position.y, dist);
+                        vec = Camera.main.ScreenToWorldPoint(vec);
+
+                        offset = toDrag.position - vec;
+                        dragging = true;
+
+                        bIsCameraControl = false;
+                    }
                     // hit.collider.gameObject.OnInteract();
                     else // 여기에 있는 거 안 눌렀으면 카메라 제어 가능하게
                     {
@@ -664,6 +627,15 @@ public class PlayerController : MonoBehaviour
                         bIsCameraControl = false;
                         // 카메라 제어 불가
                     }
+
+                    else if(HitObject.TryGetComponent<Magnetic>(out Magnetic magnetic))
+                    {
+                        vec = new Vector3(Input.mousePosition.x, Input.mousePosition.y, dist);
+                        vec = Camera.main.ScreenToWorldPoint(vec);
+                        toDrag.position = vec + offset;
+
+                        bIsCameraControl = false;
+                    }
                // }
             }
 
@@ -733,6 +705,13 @@ public class PlayerController : MonoBehaviour
                     dragging = false;
                     HitObject = null;
                     
+                }
+
+                else if(dragging && HitObject.TryGetComponent<Magnetic>(out Magnetic magnetic))
+                {
+                    
+                    dragging = false;
+                    HitObject = null;
                 }
             }
         }

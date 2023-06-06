@@ -23,7 +23,7 @@ public class CrookesPaddle : MonoBehaviour
         CathodeRayPlus = transform.Find("CathodeRay_Plus").gameObject.GetComponent<Light>();
         pinWheel = transform.Find("PinWheel").gameObject.GetComponent<CrookesWheel>();
         Ampere = PowerSupply.GetComponent<PowerSupply>().GetAmpere();
-        CathodeRayMinus.GetComponent<Light>().intensity = 0;
+        CathodeRayMinus.intensity = 0;
         CathodeRayPlus.intensity = 0;
     }
 
