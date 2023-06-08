@@ -258,7 +258,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2f8ce254d8fba924ba2d51449b41b765, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PowerSupply: {fileID: 0}
+  PowerSupply: {fileID: 3639776874333996340, guid: d48fdc11cee5fa245bd28dbe5c4a538a, type: 3}
+  PinWheel: {fileID: 7960765761604809733}
+  PlusRay: {fileID: 7960765760797333560}
+  MinusRay: {fileID: 7960765761977459059}
 --- !u!65 &7960765760911247211
 BoxCollider:
   m_ObjectHideFlags: 0

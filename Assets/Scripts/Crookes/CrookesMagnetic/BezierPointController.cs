@@ -10,8 +10,11 @@ public class BezierPointController : MonoBehaviour
     Vector3 point1Origin, point2Origin, point3Origin, point4Origin;
     Vector3 Mag_SouthPos;
     Vector3 Mag_NorthPos;
-    public GameObject Mag_South;
-    public GameObject Mag_North;
+    public GameObject Magnetic;
+    // public GameObject Mag_South;
+    // public GameObject Mag_North;
+    GameObject Mag_South;
+    GameObject Mag_North;
     public GameObject point1;
     public GameObject point2;
     public GameObject point3;
@@ -24,6 +27,8 @@ public class BezierPointController : MonoBehaviour
         point2Origin = point2.transform.position;
         point3Origin = point3.transform.position;
         point4Origin = point4.transform.position;
+        Mag_South = Magnetic.transform.Find("Magnetic_S").gameObject;
+        Mag_North = Magnetic.transform.Find("Magnetic_N").gameObject;
     }
 
     void LateUpdate()
@@ -56,8 +61,8 @@ public class BezierPointController : MonoBehaviour
                 if(southDistToP4 < stdDist)
                 {
                     float distP4 = stdDist - southDistToP4;
-                    point1.transform.position = point1Origin + (Vector3.up * (xDist + distP4) * 0.1f);
-                    point2.transform.position = point2Origin + (Vector3.up * (xDist + distP4) * 0.1f);
+                    point1.transform.position = point1Origin + (Vector3.up * (xDist + distP4) * 0.2f);
+                    point2.transform.position = point2Origin + (Vector3.up * (xDist + distP4) * 0.05f);
                 }
                 else
                     point1.transform.position = point1Origin + (Vector3.up * xDist * 0.1f);
@@ -68,16 +73,6 @@ public class BezierPointController : MonoBehaviour
                 point2.transform.position = point2Origin;
             }
             count = 0;
-        }
-    }
-    private void OnTriggerEnter(Collider collider)
-    {
-        if(collider.TryGetComponent<Magnetic>(out Magnetic magnetic))
-        {
-            Mag_SouthPos = Mag_South.transform.position;
-            Mag_NorthPos = Mag_North.transform.position;
-            // Mag_SouthPos = magnetic.GetSouthPosition();
-            // Mag_NorthPos = magnetic.GetNorthPosition();
         }
     }
 }

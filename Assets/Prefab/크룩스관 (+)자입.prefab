@@ -480,7 +480,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 219242550eb5cc248ad3ccd1a7fd132a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  PowerSupply: {fileID: 0}
+  PowerSupply: {fileID: 3639776874333996340, guid: d48fdc11cee5fa245bd28dbe5c4a538a, type: 3}
   bIsPowered: 0
   Ampere: 0
 --- !u!1 &8179414952021708384

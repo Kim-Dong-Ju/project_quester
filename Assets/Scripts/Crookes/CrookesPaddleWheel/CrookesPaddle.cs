@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class CrookesPaddle : MonoBehaviour
 {
-    public GameObject PowerSupply;
+    public GameObject PowerSupply, PinWheel, PlusRay, MinusRay;
     // public GameObject PlusWire;
     // public GameObject MinusWire;
     Light CathodeRayPlus, CathodeRayMinus;
@@ -19,9 +19,9 @@ public class CrookesPaddle : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        CathodeRayMinus = transform.Find("CathodeRay_Minus").gameObject.GetComponent<Light>();
-        CathodeRayPlus = transform.Find("CathodeRay_Plus").gameObject.GetComponent<Light>();
-        pinWheel = transform.Find("PinWheel").gameObject.GetComponent<CrookesWheel>();
+        CathodeRayMinus = MinusRay.GetComponent<Light>();
+        CathodeRayPlus = PlusRay.gameObject.GetComponent<Light>();
+        pinWheel = PinWheel.gameObject.GetComponent<CrookesWheel>();
         Ampere = PowerSupply.GetComponent<PowerSupply>().GetAmpere();
         CathodeRayMinus.intensity = 0;
         CathodeRayPlus.intensity = 0;
@@ -42,7 +42,8 @@ public class CrookesPaddle : MonoBehaviour
             bIsPowered = bValue;
 
         SetLight();
-        pinWheel.SetPinWheel(bIsPowered, bIsSwapped);
+        if(pinWheel != null)
+            pinWheel.SetPinWheel(bIsPowered, bIsSwapped);
     }
     
     public void SetIsSwapped(bool bValue)
@@ -56,34 +57,39 @@ public class CrookesPaddle : MonoBehaviour
             bIsSwapped = bValue;
         
         SetLight();
-        pinWheel.SetPinWheel(bIsPowered, bIsSwapped);
+        if(pinWheel != null)
+            pinWheel.SetPinWheel(bIsPowered, bIsSwapped);
     }
 
     public void SetAmpere(float fAmphere)
     {
         Ampere = fAmphere;
-        pinWheel.SetAmpere(Ampere);
+        if(pinWheel != null)
+            pinWheel.SetAmpere(Ampere);
     }
 
     private void SetLight()
     {
-        if(bIsPowered)
+        if(CathodeRayPlus != null && CathodeRayMinus != null)
         {
-            if(bIsSwapped) // Toggle을 눌렀을 때. 즉 검정핀이 Plus극이, 빨간핀이 Minus극이 되었을 때
+            if(bIsPowered)
             {
-                CathodeRayPlus.intensity = 0;
-                CathodeRayMinus.intensity = Ampere;
+                if(bIsSwapped) // Toggle을 눌렀을 때. 즉 검정핀이 Plus극이, 빨간핀이 Minus극이 되었을 때
+                {
+                    CathodeRayPlus.intensity = 0;
+                    CathodeRayMinus.intensity = Ampere;
+                }
+                else
+                {
+                    CathodeRayMinus.intensity = 0;
+                    CathodeRayPlus.intensity = Ampere;
+                }
             }
             else
             {
                 CathodeRayMinus.intensity = 0;
-                CathodeRayPlus.intensity = Ampere;
+                CathodeRayPlus.intensity = 0;
             }
-        }
-        else
-        {
-            CathodeRayMinus.intensity = 0;
-            CathodeRayPlus.intensity = 0;
         }
     }
 

@@ -21,7 +21,7 @@ public class PlayerController : MonoBehaviour
     
     [HideInInspector]
     public Vector3 camToFloor, offset, vec;
-    public float wheelAngle;
+    public float wheelAngle = 0f; // 전류 조절기의 초기 회전각
     public Vector2 wheelLastPos, wheelCurPos;
     // private enum cameraMode {
     //     None, Move, Rotate, Zoom // None is None & ItemHandle
@@ -35,6 +35,7 @@ public class PlayerController : MonoBehaviour
     public bool check = true;
     private float dist;
     private bool dragging = false;
+    private bool wheel_CW=false;
     private Transform toDrag;
     public bool bIsCameraControl = false;
     public float fZoomSpeed = 0.1f;
@@ -53,7 +54,7 @@ public class PlayerController : MonoBehaviour
 
     // Update is called once per frame
     // 오브젝터 제어 -> 카메라 제어 순으로 반복할 예정
-    void LateUpdate()
+    void Update()
     {
         if(!bIsCameraControl) LineTraceFunc();
         // 현재 카메라 제어 중이 아닐 경우엔 오브젝트 제어
@@ -475,9 +476,6 @@ public class PlayerController : MonoBehaviour
 
             else if(touch.phase == TouchPhase.Stationary) // 화면을 꾹 누르고 있을 때
             {
-                if(Physics.Raycast(ray, out hit, fMaxDistance)) // Ray를 쏴서 충돌한 객체를 hit에 저장
-                {
-                    Debug.DrawLine(ray.origin, hit.point, Color.red, 0.5f); 
                     // 맞았을 때 빨간색으로 표시(Debug용) 정식 출시 시 삭제해도 무관
 
                   //  HitObject = hit.collider.gameObject; 
@@ -487,21 +485,22 @@ public class PlayerController : MonoBehaviour
                     // 터치를 뗐을 때의 트리거를 작동 시키기 위해 LastHitObj에도 저장
 
                     // if(/* HitObject.name == "ON_OFF_Sub" || */ CurClick == whichClicked.PSSub) // 맞은 객체의 이름이 전원 장치의 Sub 버튼일 경우
-                    if(HitObject.TryGetComponent<OnOffSub>(out OnOffSub onOffSub))
-                    {
-                        // HitObject.GetComponent<OnOffSub>().OnInteract(); 
-                        onOffSub.OnInteract();
-                        // 해당 객체의 인터렉트 메서드 실행
+                if(HitObject == null)
+                { return; }
+                else if(HitObject.TryGetComponent<OnOffSub>(out OnOffSub onOffSub))
+                {
+                    // HitObject.GetComponent<OnOffSub>().OnInteract(); 
+                    onOffSub.OnInteract();
+                    // 해당 객체의 인터렉트 메서드 실행
 
-                        CurClick = whichClicked.PSSub;
-                      //  bBtnClicked = true; 
-                        // 현재 버튼을 누를 상태임을 표시
+                    CurClick = whichClicked.PSSub;
+                    //  bBtnClicked = true; 
+                    // 현재 버튼을 누를 상태임을 표시
 
-                        bIsCameraControl = false;
-                        // 카메라 제어 불가능으로 설정
-                        //bIsItemClicked = true; 
-                        // 누르는 동안 카메라가 움직이지 못하게 하기 위해 아이템 선택 중임을 표시
-                    }
+                    bIsCameraControl = false;
+                    // 카메라 제어 불가능으로 설정
+                    //bIsItemClicked = true; 
+                    // 누르는 동안 카메라가 움직이지 못하게 하기 위해 아이템 선택 중임을 표시
                 }
             }
 
@@ -518,7 +517,11 @@ public class PlayerController : MonoBehaviour
                     // LastHitObj = HitObject; 
                     // 터치를 뗐을 때의 트리거를 작동 시키기 위해 LastHitObj에도 저장
                     // if(CurClick == whichClicked.SRed) // 현재 선택한 오브젝트의 이름이 빨간 핀일 경우
-                    if(HitObject.TryGetComponent<RedStartPin>(out RedStartPin redStartPin))
+                    if(HitObject == null)
+                    {
+                        return;
+                    }
+                    else if(HitObject.TryGetComponent<RedStartPin>(out RedStartPin redStartPin))
                     {
                         // if(HitObject.GetComponent<RedStartPin>().GetIsConneted()) 
                         if(redStartPin.GetIsConneted())
@@ -566,9 +569,27 @@ public class PlayerController : MonoBehaviour
                     {
                         wheelCurPos = touch.position;
                         Vector2 dir = wheelLastPos - wheelCurPos;
-                        wheelAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
-                        wheelAngle *= -1;
-                        wheelAngle = Mathf.Clamp(wheelAngle, -360.0f, 360.0f);
+                        float tempAngle = Mathf.Atan2(dir.y, dir.x) * Mathf.Rad2Deg;
+                        tempAngle *= -1;
+                        
+                        // if(wheelAngle < tempAngle) // 이전 각도보다 바뀐 각도가 더 크면 시계방향으로
+                        //     wheel_CW = true;
+                        // else // 이전 각도보다 바뀐 각도가 더 작으면 반시계방향으로 
+                        //     wheel_CW = false;
+                        
+                        // // wheelAngle *= -1;
+                        // // wheelAngle = Mathf.Clamp(wheelAngle, -360.0f, 360.0f);
+                        // if(wheelAngle >= 0 && tempAngle < 0f && !wheel_CW) // 반시계방향으로 돌리면서 회전각이 -로 될 경우
+                        // {
+                        //     tempAngle = 0f;
+                        // }
+                        // else if(wheelAngle < 0f && tempAngle > 0f && wheel_CW)
+                        // // 시계방향으로 돌리면서 현재 각이 0보다 작은데 바뀐 각이 0보다 클 경우, 즉 이 경우는 한바퀴 이상을 돌린 경우임
+                        // {
+                        //     tempAngle = -179f; // 고정
+                        // }
+                        wheelAngle = tempAngle;
+                        
                         // HitObject.GetComponent<AmpereWheel>().SetAngle(wheelAngle);
                         ampereWheel.SetAngle(wheelAngle);
                         // HitObject.GetComponent<AmpereWheel>().OnInteract();
@@ -642,7 +663,10 @@ public class PlayerController : MonoBehaviour
             else if(touch.phase == TouchPhase.Ended) // 터치를 뗐을 때
             {
                 // if(CurClick == whichClicked.PSSub) // 전원 장치의 Sub 버튼을 눌렀을 때 작동
-                if(HitObject.TryGetComponent<OnOffSub>(out OnOffSub onOffSub))
+                if(HitObject == null)
+                { return; }
+                
+                else if(HitObject.TryGetComponent<OnOffSub>(out OnOffSub onOffSub))
                 {
                     // HitObject.GetComponent<OnOffSub>().OffInteract(); // Sub 버튼의 스크립트 실행
                     onOffSub.OffInteract();

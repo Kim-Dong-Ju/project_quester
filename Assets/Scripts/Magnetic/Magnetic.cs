@@ -21,4 +21,9 @@ public class Magnetic : MonoBehaviour
     {
         return Mag_North.transform.position;
     }
+
+    // public void ButtonClick()
+    // {
+    //     transform.Rotate(0, -180, 0);
+    // }
 }

@@ -54,12 +54,12 @@
      <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\CBezier.cs" />
      <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
      <Compile Include="Assets\Scripts\PowerSupply\OnOffSub.cs" />
+     <Compile Include="Assets\Scripts\EventManager\EventManager.cs" />
      <Compile Include="Assets\Scripts\PowerSupply\NeedleAnim.cs" />
      <Compile Include="Assets\Scripts\PowerSupply\PowerSupply.cs" />
      <Compile Include="Assets\Scripts\Magnetic\Magnetic.cs" />
      <Compile Include="Assets\Scripts\Crookes\CrookesPaddleWheel\CrookesWheel.cs" />
      <Compile Include="Assets\test.cs" />
-     <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\BezierPointMinus.cs" />
     <Reference Include="UnityEngine">
         <HintPath>C:\Program Files\Unity\Hub\Editor\2020.3.40f1\Editor\Data\Managed\UnityEngine\UnityEngine.dll</HintPath>
     </Reference>
@@ -683,6 +683,9 @@
     </Reference>
     <Reference Include="Unity.Mathematics">
         <HintPath>D:\Unity\흠\project_quester\Library\ScriptAssemblies\Unity.Mathematics.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.2D.Sprite.Editor">
+        <HintPath>D:\Unity\흠\project_quester\Library\ScriptAssemblies\Unity.2D.Sprite.Editor.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

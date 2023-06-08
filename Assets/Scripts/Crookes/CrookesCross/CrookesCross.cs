@@ -14,6 +14,7 @@ public class CrookesCross : MonoBehaviour
     public bool bIsPowered = false;
     private bool bIsSwapped = false;
     public float Ampere;
+    [SerializeField]
     bool bPConnect = false, bMConnect = false;
     
     // Start is called before the first frame update
@@ -41,31 +42,33 @@ public class CrookesCross : MonoBehaviour
     }
     public void SetIsPowered(bool bValue)
     {
-        
-        if(PlusWire != null)
-            bPConnect = PlusWire.GetIsConneted();
-        if(MinusWire != null)
-            bMConnect = MinusWire.GetIsConneted();
+        // if(PlusWire != null)
+        //     bPConnect = PlusWire.GetIsConneted();
+        // if(MinusWire != null)
+        //     bMConnect = MinusWire.GetIsConneted();
 
         if(bPConnect && bMConnect)
             bIsPowered = bValue;
 
-        if(bIsPowered)
+        if(CathodeRay != null)
         {
-            CathodeRay.intensity = Ampere;
-        }
-        else
-        {
-            CathodeRay.intensity = 0;
+            if(bIsPowered)
+            {
+                CathodeRay.intensity = Ampere;
+            }
+            else
+            {
+                CathodeRay.intensity = 0;
+            }
         }
     }
     
     public void SetIsSwapped(bool bValue)
     {
-        if(PlusWire != null)
-            bPConnect = PlusWire.GetIsConneted();
-        if(MinusWire != null)
-            bMConnect = MinusWire.GetIsConneted();
+        // if(PlusWire != null)
+        //     bPConnect = PlusWire.GetIsConneted();
+        // if(MinusWire != null)
+        //     bMConnect = MinusWire.GetIsConneted();
 
         if(bPConnect && bMConnect)
             bIsSwapped = bValue;
@@ -85,6 +88,7 @@ public class CrookesCross : MonoBehaviour
             collider.gameObject.transform.localPosition = new Vector3(-0.0026f, 0.1706f, 0.1105f);
             collider.gameObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 90));
             redEndPin.SetIsConneted(true);
+            bPConnect = true;
         }
         else if(collider.gameObject.TryGetComponent<BlackEndPin>(out BlackEndPin blackEndPin))
         {
@@ -93,6 +97,7 @@ public class CrookesCross : MonoBehaviour
             collider.gameObject.transform.localPosition = new Vector3(-0.0026f, 0.284f, 0.311f);
             collider.gameObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 90));
             blackEndPin.SetIsConneted(true);
+            bMConnect = true;
         }
     }
 }

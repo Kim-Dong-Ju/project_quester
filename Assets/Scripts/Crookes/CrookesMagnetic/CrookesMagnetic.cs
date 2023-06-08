@@ -52,13 +52,16 @@ public class CrookesMagnetic : MonoBehaviour
         if(bPConnect && bMConnect)
             bIsPowered = bValue;
 
-        if(bIsPowered)
+        if(CathodeRay != null)
         {
-            CathodeRay.enabled = true;
-        }
-        else
-        {
-            CathodeRay.enabled = false;
+            if(bIsPowered)
+            {
+                CathodeRay.enabled = true;
+            }
+            else
+            {
+                CathodeRay.enabled = false;
+            }
         }
         SetLight();
     }
@@ -78,30 +81,34 @@ public class CrookesMagnetic : MonoBehaviour
     public void SetAmpere(float fAmphere)
     {
         Ampere = fAmphere;
-        ray_renderer.SetIntensity(Ampere);
+        if(ray_renderer != null)
+            ray_renderer.SetIntensity(Ampere);
     }
 
     private void SetLight()
     {
-        if(bIsPowered)
+        if(CathodeRayPlus != null && CathodeRayMinus != null && CathodeRay != null)
         {
-            if(bIsSwapped) // Toggle을 눌렀을 때. 즉 검정핀이 Plus극이, 빨간핀이 Minus극이 되었을 때
+            if(bIsPowered)
             {
-                CathodeRayPlus.intensity = 0;
-                CathodeRayMinus.intensity = Ampere;
-                CathodeRay.enabled = false;
+                if(bIsSwapped) // Toggle을 눌렀을 때. 즉 검정핀이 Plus극이, 빨간핀이 Minus극이 되었을 때
+                {
+                    CathodeRayPlus.intensity = 0;
+                    CathodeRayMinus.intensity = Ampere;
+                    CathodeRay.enabled = false;
+                }
+                else
+                {
+                    CathodeRayMinus.intensity = 0;
+                    CathodeRayPlus.intensity = Ampere;
+                    CathodeRay.enabled = true;
+                }
             }
             else
             {
                 CathodeRayMinus.intensity = 0;
-                CathodeRayPlus.intensity = Ampere;
-                CathodeRay.enabled = true;
+                CathodeRayPlus.intensity = 0;
             }
-        }
-        else
-        {
-            CathodeRayMinus.intensity = 0;
-            CathodeRayPlus.intensity = 0;
         }
     }
 

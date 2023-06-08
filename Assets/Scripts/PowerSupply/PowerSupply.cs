@@ -14,11 +14,12 @@ public class PowerSupply : MonoBehaviour
     public GameObject CrookesCrossObj;
    // bool bPlusStartConnected = false;
    // bool bMinusStartConnected = false;
-    protected bool bPowered = false;
+    private bool bPowered = false;
     private bool bIsMainOn = false;
-    protected bool bIsSwapped = false;
-    protected bool bIsUp = false;
-    protected float Ampere = 0;
+    private bool bIsSwapped = false;
+    private bool bRedCon = false, bBlackCon = false, bAllCon = false; // 전선 연결 확인용
+    private bool bIsUp = false;
+    private float Ampere = 0;
     NeedleAnim needleAnim;
     RedStartPin redStartPin;
     BlackStartPin blackStartPin;
@@ -36,10 +37,18 @@ public class PowerSupply : MonoBehaviour
         onOffSub = transform.Find("ON_OFF_Sub").gameObject.GetComponent<OnOffSub>();
         onOffMain = transform.Find("ON_OFF_Main").gameObject.GetComponent<OnOffMain>();
         needleAnim = Needle.GetComponent<NeedleAnim>();
+        if(needleAnim == null)
+        { Debug.Log("needleAnim == null"); }
         crookesCross = CrookesCrossObj.GetComponent<CrookesCross>();
+        if(crookesCross == null)
+        { Debug.Log("crookesCross == null"); }
         crookesMagnetic = CrookesMagneticObj.GetComponent<CrookesMagnetic>();
+        if(crookesMagnetic == null)
+        { Debug.Log("crookesMagnetic == null"); }
         crookesPaddle = CrookesWheelObj.GetComponent<CrookesPaddle>();
-        needleAnim.SetNeedleAnim(false);
+        if(crookesPaddle == null)
+        { Debug.Log("crookesPaddle == null"); }
+        //needleAnim.SetNeedleAnim(false);
     }
 
     // Update is called once per frame
@@ -55,9 +64,12 @@ public class PowerSupply : MonoBehaviour
         redStartPin.SetIsPowered(bPowered);
         blackStartPin.SetIsPowered(bPowered);
         SetNeedleAnim(bPowered);
-        crookesPaddle.SetIsPowered(bPowered);
-        crookesCross.SetIsPowered(bPowered);
-        crookesMagnetic.SetIsPowered(bPowered);
+        if(crookesPaddle != null)
+            crookesPaddle.SetIsPowered(bPowered);
+        if(crookesCross != null)
+            crookesCross.SetIsPowered(bPowered);
+        if(crookesMagnetic != null)
+            crookesMagnetic.SetIsPowered(bPowered);
     }
 
     public void SetIsMainOn(bool bValue)
@@ -72,9 +84,12 @@ public class PowerSupply : MonoBehaviour
 
         redStartPin.SetIsPlus(bIsSwapped);
         blackStartPin.SetIsMinus(bIsSwapped);
-        crookesPaddle.SetIsSwapped(bIsSwapped);
-        crookesCross.SetIsSwapped(bIsSwapped);
-        crookesMagnetic.SetIsSwapped(bIsSwapped);
+        if(crookesPaddle != null)
+            crookesPaddle.SetIsSwapped(bIsSwapped);
+        if(crookesCross != null)
+            crookesCross.SetIsSwapped(bIsSwapped);
+        if(crookesMagnetic != null)
+            crookesMagnetic.SetIsSwapped(bIsSwapped);
     }
 
     public void SetAmpere(float value)
@@ -82,9 +97,12 @@ public class PowerSupply : MonoBehaviour
         Debug.Log("PowerSupply Ampere: " + Ampere);
         Ampere = value;
         NeedleUpChange(bIsUp);
-        crookesCross.SetAmpere(Ampere);
-        crookesPaddle.SetAmpere(Ampere);
-        crookesMagnetic.SetAmpere(Ampere);
+        if(crookesCross != null)
+            crookesCross.SetAmpere(Ampere);
+        if(crookesPaddle != null)
+            crookesPaddle.SetAmpere(Ampere);
+        if(crookesMagnetic != null)
+            crookesMagnetic.SetAmpere(Ampere);
     }
 
     public void SetNeedleAnim(bool value)
@@ -121,6 +139,11 @@ public class PowerSupply : MonoBehaviour
         return Ampere;
     }
 
+    public bool GetAllWireConnected()
+    {
+        return bAllCon;
+    }
+
     private void OnTriggerEnter(Collider collider)
     {
         if(collider.gameObject.name == "Wire_Plus_Start")
@@ -128,12 +151,18 @@ public class PowerSupply : MonoBehaviour
             collider.gameObject.transform.localPosition = new Vector3(0.059f, 0.11275f, -0.04788f);
            // collider.gameObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
             collider.gameObject.GetComponent<RedStartPin>().SetIsConneted(true);
+            bRedCon = true;
+            if(bBlackCon)
+            { bAllCon = true; }
         }
         else if(collider.gameObject.name == "Wire_Minus_Start")
         {
             collider.gameObject.transform.localPosition = new Vector3(0.059f, 0.11275f, 0.041f);
           //  collider.gameObject.transform.localRotation = Quaternion.Euler(new Vector3(0, 0, 0));
             collider.gameObject.GetComponent<BlackStartPin>().SetIsConneted(true);
+            bBlackCon = true;
+            if(bRedCon)
+            { bAllCon = true; }
         }
     }
 }
