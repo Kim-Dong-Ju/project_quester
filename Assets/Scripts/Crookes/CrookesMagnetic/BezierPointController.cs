@@ -10,10 +10,13 @@ public class BezierPointController : MonoBehaviour
     Vector3 point1Origin, point2Origin, point3Origin, point4Origin;
     Vector3 Mag_SouthPos;
     Vector3 Mag_NorthPos;
-    public GameObject Magnetic;
+    [SerializeField]
+    GameObject Magnetic;
     // public GameObject Mag_South;
     // public GameObject Mag_North;
+    [SerializeField]
     GameObject Mag_South;
+    [SerializeField]
     GameObject Mag_North;
     public GameObject point1;
     public GameObject point2;
@@ -27,8 +30,6 @@ public class BezierPointController : MonoBehaviour
         point2Origin = point2.transform.position;
         point3Origin = point3.transform.position;
         point4Origin = point4.transform.position;
-        Mag_South = Magnetic.transform.Find("Magnetic_S").gameObject;
-        Mag_North = Magnetic.transform.Find("Magnetic_N").gameObject;
     }
 
     void LateUpdate()
@@ -74,5 +75,19 @@ public class BezierPointController : MonoBehaviour
             }
             count = 0;
         }
+    }
+
+    public void SetMagnetic(GameObject obj)
+    {
+        Magnetic = obj;
+        Mag_South = Magnetic.transform.Find("Magnetic_S").gameObject;
+        Mag_North = Magnetic.transform.Find("Magnetic_N").gameObject;
+    }
+
+    public void DeleteMagnetic()
+    {
+        Magnetic = null;
+        Mag_North = null;
+        Mag_South = null;
     }
 }

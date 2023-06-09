@@ -9,9 +9,9 @@ public class PowerSupply : MonoBehaviour
     // GameObject OnOffSubButton;
     // GameObject OnOffMainSwitch;
     public GameObject Needle;
-    public GameObject CrookesWheelObj;
-    public GameObject CrookesMagneticObj;
-    public GameObject CrookesCrossObj;
+    GameObject CrookesWheelObj;
+    GameObject CrookesMagneticObj;
+    GameObject CrookesCrossObj;
    // bool bPlusStartConnected = false;
    // bool bMinusStartConnected = false;
     private bool bPowered = false;
@@ -39,15 +39,6 @@ public class PowerSupply : MonoBehaviour
         needleAnim = Needle.GetComponent<NeedleAnim>();
         if(needleAnim == null)
         { Debug.Log("needleAnim == null"); }
-        crookesCross = CrookesCrossObj.GetComponent<CrookesCross>();
-        if(crookesCross == null)
-        { Debug.Log("crookesCross == null"); }
-        crookesMagnetic = CrookesMagneticObj.GetComponent<CrookesMagnetic>();
-        if(crookesMagnetic == null)
-        { Debug.Log("crookesMagnetic == null"); }
-        crookesPaddle = CrookesWheelObj.GetComponent<CrookesPaddle>();
-        if(crookesPaddle == null)
-        { Debug.Log("crookesPaddle == null"); }
         //needleAnim.SetNeedleAnim(false);
     }
 
@@ -142,6 +133,49 @@ public class PowerSupply : MonoBehaviour
     public bool GetAllWireConnected()
     {
         return bAllCon;
+    }
+
+    public void SetCrookesWheel(GameObject obj) // 크룩스 회전차입이 생성될 때 변수에 할당시킬 함수
+    {
+        CrookesWheelObj = obj;
+        crookesPaddle = CrookesWheelObj.GetComponent<CrookesPaddle>();
+        if(crookesPaddle == null)
+        { Debug.Log("crookesPaddle == null"); }
+    }
+
+    public void SetCrookesCross(GameObject obj) // 크룩스 십자입이 생성될 때 변수에 할당시킬 함수
+    {
+        CrookesCrossObj = obj;
+        crookesCross = CrookesCrossObj.GetComponent<CrookesCross>();
+        if(crookesCross == null)
+        { Debug.Log("crookesCross == null"); }
+    }
+
+    public void SetCrookesMagnetic(GameObject obj)
+    {
+        CrookesMagneticObj = obj;
+        crookesMagnetic = CrookesMagneticObj.GetComponent<CrookesMagnetic>();
+        if(crookesMagnetic == null)
+        { Debug.Log("crookesMagnetic == null"); }
+    }
+
+    // 할당 해제 함수
+    public void DeleteCrookesWheel()
+    {
+        crookesPaddle = null;
+        CrookesWheelObj = null;
+    }
+
+    public void DeleteCrookesCross()
+    {
+        crookesCross = null;
+        CrookesCrossObj = null;
+    }
+
+    public void DeleteCrookesMagnetic()
+    {
+        crookesMagnetic = null;
+        CrookesMagneticObj = null;
     }
 
     private void OnTriggerEnter(Collider collider)

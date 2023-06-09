@@ -12,9 +12,11 @@ public class CrookesPaddle : MonoBehaviour
     CrookesWheel pinWheel;
     RedEndPin PlusWire;
     BlackEndPin MinusWire;
+    [SerializeField]
     bool bIsPowered = false;
     bool bIsSwapped = false;
     bool bPConnect = false, bMConnect = false;
+    [SerializeField]
     float Ampere = 0.0f;
     // Start is called before the first frame update
     void Start()
@@ -101,6 +103,7 @@ public class CrookesPaddle : MonoBehaviour
             collider.gameObject.transform.SetParent(this.transform);
             collider.gameObject.transform.localPosition = new Vector3(0.006499985f, 0.1861666f, -0.10425f);
             redEndPin.SetIsConneted(true);
+            bPConnect = true;
         }
         else if(collider.gameObject.TryGetComponent<BlackEndPin>(out BlackEndPin blackEndPin))
         {
@@ -108,6 +111,7 @@ public class CrookesPaddle : MonoBehaviour
             collider.gameObject.transform.SetParent(this.transform);
             collider.gameObject.transform.localPosition = new Vector3(0.006474752f, 0.1862269f, 0.09510541f);
             blackEndPin.SetIsConneted(true);
+            bMConnect = true;
         }
     }
 }

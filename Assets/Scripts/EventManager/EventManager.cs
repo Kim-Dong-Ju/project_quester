@@ -61,11 +61,12 @@ public class EventManager : MonoBehaviour
             // childRt.localRotation = Quaternion.identity;
             // childRt.sizeDelta = Vector2.zero;
             count++; // 계속 생성되는거 방지용
-            Header.GetComponent<Image>().color = new Color(0f, 1f, 0.8980392f, 1f);
-            CurrentToolText.GetComponent<Text>().color = Color.white;
-            SelectPanel.SetActive(true);
-            // UI 출력
-            Debug.Log(count);
+            SelectWidget();
+            // Header.GetComponent<Image>().color = new Color(0f, 1f, 0.8980392f, 1f);
+            // CurrentToolText.GetComponent<Text>().color = Color.white;
+            // SelectPanel.SetActive(true);
+            // // UI 출력
+            // Debug.Log(count);
         }
 
 
@@ -131,6 +132,24 @@ public class EventManager : MonoBehaviour
         // }
     }
 
+    public void SelectWidget() // 조건을 만족했을 때 생성시킬 UI
+    {
+        StartCoroutine(Widget());
+    }   
+
+    IEnumerator Widget()
+    {
+        yield return null; // 한 프레임 이후 실행
+
+        Header.GetComponent<Image>().color = new Color(0f, 1f, 0.8980392f, 1f);
+        CurrentToolText.GetComponent<Text>().color = Color.white;
+        SelectPanel.SetActive(true);
+        // UI 출력
+        Debug.Log(count);
+
+        yield return null;
+    }
+
     public void RestartButton() // 재시작 버튼을 눌렀을 경우
     {
         // 현재 씬 다시 재로드
@@ -185,7 +204,9 @@ public class EventManager : MonoBehaviour
         // 크룩스 슬릿입 생성
         crookesMagIns = Instantiate(CrookesMagnetic, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesMagnetic.transform.localEulerAngles));
         crookesMagIns.GetComponent<CrookesMagnetic>().PowerSupply = this.PowerSupply;
+        PowerSupply.GetComponent<PowerSupply>().SetCrookesMagnetic(crookesMagIns);
         magneticIns = Instantiate(Magnetic, new Vector3(0.925f, 0.7938f, 0.289f), Quaternion.Euler(Magnetic.transform.localEulerAngles));
+        crookesMagIns.GetComponent<CrookesMagnetic>().SetMagnetic(magneticIns);
         minusWireIns = Instantiate(MinusWireEnd, new Vector3(0.85f, 0.51f, 0.35f), Quaternion.identity);
         plusWireIns = Instantiate(PlusWireEnd, new Vector3(0.79f, 0.51f, 0.35f), Quaternion.identity);
 
@@ -207,6 +228,7 @@ public class EventManager : MonoBehaviour
         // 크룩스 십자입 생성
         crookesCrossIns = Instantiate(CrookesCross, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesCross.transform.localEulerAngles));
         crookesCrossIns.GetComponent<CrookesCross>().PowerSupply = this.PowerSupply;
+        PowerSupply.GetComponent<PowerSupply>().SetCrookesCross(crookesCrossIns);
         minusWireIns = Instantiate(MinusWireEnd, new Vector3(0.85f, 0.51f, 0.35f), Quaternion.identity);
         plusWireIns = Instantiate(PlusWireEnd, new Vector3(0.79f, 0.51f, 0.35f), Quaternion.identity);
 
@@ -230,6 +252,7 @@ public class EventManager : MonoBehaviour
         // 크룩스 회전차입 생성
         crookeswheelIns = Instantiate(CrookesWheel, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesWheel.transform.localEulerAngles));
         crookeswheelIns.GetComponent<CrookesPaddle>().PowerSupply = this.PowerSupply;
+        PowerSupply.GetComponent<PowerSupply>().SetCrookesWheel(crookeswheelIns);
         minusWireIns = Instantiate(MinusWireEnd, new Vector3(0.85f, 0.51f, 0.35f), Quaternion.identity);
         plusWireIns = Instantiate(PlusWireEnd, new Vector3(0.79f, 0.51f, 0.35f), Quaternion.identity);
 

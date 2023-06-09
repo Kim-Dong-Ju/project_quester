@@ -17,7 +17,7 @@ GameObject:
   - component: {fileID: 1715259296812160098}
   - component: {fileID: 1715259296812160099}
   m_Layer: 0
-  m_Name: BazierLaser
+  m_Name: BezierLaser
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -306,6 +306,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   PowerSupply: {fileID: 3639776874333996340, guid: d48fdc11cee5fa245bd28dbe5c4a538a, type: 3}
+  BezierLaser: {fileID: 1715259296812160097}
+  BezierPoint: {fileID: 1715259297951972270}
+  bIsPowered: 0
+  Ampere: 0
 --- !u!1 &1715259297115040138
 GameObject:
   m_ObjectHideFlags: 0
@@ -1003,6 +1007,8 @@ MonoBehaviour:
   stdXDist: 0.099
   stdDist: 0.18
   Magnetic: {fileID: 7614965625765706708, guid: 70f747ca41217fd4b8908ad01059bf2a, type: 3}
+  Mag_South: {fileID: 0}
+  Mag_North: {fileID: 0}
   point1: {fileID: 1715259297839282246}
   point2: {fileID: 1715259297325079354}
   point3: {fileID: 1715259297721906564}
