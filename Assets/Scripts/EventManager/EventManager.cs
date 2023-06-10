@@ -4,10 +4,15 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using TMPro;
 
 public class EventManager : MonoBehaviour
 {
     private string text, crossText, wheelText, magneticText, electrolysisText, PlusText;
+    private string stepOne, stepTwo, stepThree, stepFour;
+    // step마다 할 도움말 Title
+    private string detailOne, detailTwo, detailThree, detailFour;
+    // step마다 할 도움말 Detail
     public GameObject PowerSupply;
     public GameObject CrookesMagnetic;
     public GameObject CrookesCross;
@@ -15,27 +20,37 @@ public class EventManager : MonoBehaviour
     public GameObject PlusWireEnd;
     public GameObject MinusWireEnd;
     public GameObject Magnetic;
-    public GameObject SelectPanel, RotateBtn, AnotherToolBtn, CurrentToolText, Header; // UI prefab들을 담을 변수들
+    public GameObject SelectPanel, RotateBtn, AnotherToolBtn, CurrentToolText, Header, HelpPopup, HelpBtn, BackBtn, RestartBtn; // UI prefab들을 담을 변수들
     public GameObject mainUI; // Canvas
+    public Sprite BackImgWhite, ReStartImgWhite; // Images
+    private Sprite BackImg, RestartImg;
+    Vector2 HelpBtnOriginPos, HelpBtnNewPos;
     GameObject crookesCrossIns, crookeswheelIns, crookesMagIns, magneticIns, plusWireIns, minusWireIns;
 
-    private bool PSWireFinish = false;
-    // 재시작 버튼 클릭 시 이벤트, 전원 장치에 전선을 꽂았을 경우 이벤트
+    // 이벤트 제어용 boolean 변수들 선언
+    private bool PSWireFinish = false, ToolWireFinish = false;
+    // 전원 장치에 전선을 꽂았는 지, 도구에 전선을 꽂았는 지
     private bool MagneticSelect = false, CrossSelect = false, WheelSelect = false; // 버튼을 통해 어느 것을 선택했는지 Check용
     private int count = 0, CrookesMagCount = 0, CrookesCrossCount = 0, CrookesWheelCount = 0;
 
     void Start()
     {
-        Debug.Log(CurrentToolText.GetComponent<Text>().text);
+        Debug.Log(CurrentToolText.GetComponent<TMP_Text>().text);
+        BackImg = BackBtn.GetComponent<Image>().sprite;
+        RestartImg = RestartBtn.GetComponent<Image>().sprite;
         SelectPanel.SetActive(false);
         RotateBtn.SetActive(false);
         AnotherToolBtn.SetActive(false);
-        text = CurrentToolText.GetComponent<Text>().text;
+        HelpPopup.SetActive(false);
+        HelpBtnOriginPos = HelpBtn.GetComponent<RectTransform>().anchoredPosition;
+        HelpBtnNewPos = new Vector2(-125f, 200f);
+        text = CurrentToolText.GetComponent<TMP_Text>().text;
         crossText = "<b>크룩스관 십자입</b>";
         wheelText = "<b>크룩스관 회전차입</b>";
         magneticText = "<b>크룩스관 슬릿입</b>";
         electrolysisText = "<b>전기분해 장치</b>";
         PlusText = "<b> | </b>";
+        stepOne = "<b></b>";
     }
 
     void LateUpdate()
@@ -134,6 +149,7 @@ public class EventManager : MonoBehaviour
 
     public void SelectWidget() // 조건을 만족했을 때 생성시킬 UI
     {
+        HelpBtn.SetActive(false);
         StartCoroutine(Widget());
     }   
 
@@ -141,8 +157,13 @@ public class EventManager : MonoBehaviour
     {
         yield return null; // 한 프레임 이후 실행
 
-        Header.GetComponent<Image>().color = new Color(0f, 1f, 0.8980392f, 1f);
-        CurrentToolText.GetComponent<Text>().color = Color.white;
+        HelpBtn.SetActive(false);
+        HelpBtn.GetComponent<RectTransform>().anchoredPosition = HelpBtnOriginPos;
+        BackBtn.GetComponent<Image>().sprite = BackImgWhite;
+        RestartBtn.GetComponent<Image>().sprite = ReStartImgWhite;
+        Header.GetComponent<Image>().color = new Color(0.4039216f, 0.7098039f, 0.7176471f, 1f);
+        CurrentToolText.GetComponent<TMP_Text>().color = Color.white;
+        CurrentToolText.GetComponent<TMP_Text>().text = "<b>원하는 도구를 선택하세요</b>";
         SelectPanel.SetActive(true);
         // UI 출력
         Debug.Log(count);
@@ -189,7 +210,7 @@ public class EventManager : MonoBehaviour
         // Destroy(AnotherToolBtn); 
         AnotherToolBtn.SetActive(false); // 창에 띄워진 것도 제거
 
-        CurrentToolText.GetComponent<Text>().text = text;
+        CurrentToolText.GetComponent<TMP_Text>().text = text;
         count = 0;
     }
 
@@ -199,7 +220,9 @@ public class EventManager : MonoBehaviour
         // Destroy(SelectPanel);
         SelectPanel.SetActive(false);
         Header.GetComponent<Image>().color = Color.white;
-        CurrentToolText.GetComponent<Text>().color = Color.black;
+        BackBtn.GetComponent<Image>().sprite = BackImg;
+        RestartBtn.GetComponent<Image>().sprite = RestartImg;
+        CurrentToolText.GetComponent<TMP_Text>().color = Color.black;
 
         // 크룩스 슬릿입 생성
         crookesMagIns = Instantiate(CrookesMagnetic, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesMagnetic.transform.localEulerAngles));
@@ -212,7 +235,9 @@ public class EventManager : MonoBehaviour
 
         AnotherToolBtn.SetActive(true);
         RotateBtn.SetActive(true);
-        CurrentToolText.GetComponent<Text>().text = text + PlusText + magneticText;
+        HelpBtn.GetComponent<RectTransform>().anchoredPosition = HelpBtnNewPos;
+        HelpBtn.SetActive(true);
+        CurrentToolText.GetComponent<TMP_Text>().text = text + PlusText + magneticText;
         MagneticSelect = true; // 중복 생성 등 방지용으로 false로 초기화
         CrookesMagCount++;
     }
@@ -223,7 +248,9 @@ public class EventManager : MonoBehaviour
         // Destroy(SelectPanel);
         SelectPanel.SetActive(false);
         Header.GetComponent<Image>().color = Color.white;
-        CurrentToolText.GetComponent<Text>().color = Color.black;
+        BackBtn.GetComponent<Image>().sprite = BackImg;
+        RestartBtn.GetComponent<Image>().sprite = RestartImg;
+        CurrentToolText.GetComponent<TMP_Text>().color = Color.black;
 
         // 크룩스 십자입 생성
         crookesCrossIns = Instantiate(CrookesCross, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesCross.transform.localEulerAngles));
@@ -235,8 +262,9 @@ public class EventManager : MonoBehaviour
         // Instantiate(RotateBtn).transform.SetParent(mainUI.transform);
         // Instantiate(AnotherToolBtn).transform.SetParent(mainUI.transform);
         AnotherToolBtn.SetActive(true);
+        HelpBtn.SetActive(true);
         
-        CurrentToolText.GetComponent<Text>().text = text + PlusText + crossText;
+        CurrentToolText.GetComponent<TMP_Text>().text = text + PlusText + crossText;
         CrossSelect = true; // 중복 방지를 위해 초기화
         CrookesCrossCount++;
     }
@@ -247,7 +275,9 @@ public class EventManager : MonoBehaviour
         // Destroy(SelectPanel);
         SelectPanel.SetActive(false);
         Header.GetComponent<Image>().color = Color.white;
-        CurrentToolText.GetComponent<Text>().color = Color.black;
+        BackBtn.GetComponent<Image>().sprite = BackImg;
+        RestartBtn.GetComponent<Image>().sprite = RestartImg;
+        CurrentToolText.GetComponent<TMP_Text>().color = Color.black;
 
         // 크룩스 회전차입 생성
         crookeswheelIns = Instantiate(CrookesWheel, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesWheel.transform.localEulerAngles));
@@ -257,7 +287,8 @@ public class EventManager : MonoBehaviour
         plusWireIns = Instantiate(PlusWireEnd, new Vector3(0.79f, 0.51f, 0.35f), Quaternion.identity);
 
         AnotherToolBtn.SetActive(true);
-        CurrentToolText.GetComponent<Text>().text = text + PlusText + wheelText;
+        HelpBtn.SetActive(true);
+        CurrentToolText.GetComponent<TMP_Text>().text = text + PlusText + wheelText;
         WheelSelect = true; // 중복 방지를 위해 초기화
         CrookesWheelCount++;
     }
@@ -268,14 +299,31 @@ public class EventManager : MonoBehaviour
         // Destroy(SelectPanel);
         SelectPanel.SetActive(false);
         Header.GetComponent<Image>().color = Color.white;
-        CurrentToolText.GetComponent<Text>().color = Color.black;
+        BackBtn.GetComponent<Image>().sprite = BackImg;
+        RestartBtn.GetComponent<Image>().sprite = RestartImg;
+        CurrentToolText.GetComponent<TMP_Text>().color = Color.black;
 
-        CurrentToolText.GetComponent<Text>().text = text + PlusText + electrolysisText;
+        CurrentToolText.GetComponent<TMP_Text>().text = text + PlusText + electrolysisText;
         AnotherToolBtn.SetActive(true);
+        HelpBtn.SetActive(true);
     }
 
     public void MagneticRotate()
     {
         magneticIns.transform.Rotate(0, -180, 0);
+    }
+
+    public void HelpPop()
+    {
+        //HelpBtn.SetActive(false);
+        HelpBtn.GetComponent<Button>().interactable = false;
+        HelpPopup.SetActive(true);
+    }
+
+    public void QuitHelpPopup() // 팝업 제어(도움말)
+    {
+       // HelpBtn.SetActive(true);
+        HelpBtn.GetComponent<Button>().interactable = true;
+        HelpPopup.SetActive(false);
     }
 }
