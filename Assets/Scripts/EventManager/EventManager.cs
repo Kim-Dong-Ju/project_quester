@@ -19,6 +19,13 @@ public class EventManager : MonoBehaviour
     public GameObject mainUI; // Canvas
     GameObject crookesCrossIns, crookeswheelIns, crookesMagIns, magneticIns, plusWireIns, minusWireIns;
 
+    public GameObject Balance;
+    public GameObject Bottle;
+    public GameObject Spatula;
+    public GameObject Vial;   
+    public GameObject WeighingDish;
+    public GameObject Funnel;
+    public GameObject PetriDish;
     private bool PSWireFinish = false;
     // 재시작 버튼 클릭 시 이벤트, 전원 장치에 전선을 꽂았을 경우 이벤트
     private bool MagneticSelect = false, CrossSelect = false, WheelSelect = false; // 버튼을 통해 어느 것을 선택했는지 Check용
@@ -36,6 +43,15 @@ public class EventManager : MonoBehaviour
         magneticText = "<b>크룩스관 슬릿입</b>";
         electrolysisText = "<b>전기분해 장치</b>";
         PlusText = "<b> | </b>";
+
+        Bottle.SetActive(false);
+        Spatula.SetActive(false);
+        Vial.SetActive(false);
+        WeighingDish.SetActive(false);
+        Funnel.SetActive(false);
+        PetriDish.SetActive(false);
+
+        
     }
 
     void LateUpdate()
@@ -209,7 +225,7 @@ public class EventManager : MonoBehaviour
         crookesMagIns.GetComponent<CrookesMagnetic>().SetMagnetic(magneticIns);
         minusWireIns = Instantiate(MinusWireEnd, new Vector3(0.85f, 0.51f, 0.35f), Quaternion.identity);
         plusWireIns = Instantiate(PlusWireEnd, new Vector3(0.79f, 0.51f, 0.35f), Quaternion.identity);
-
+ 
         AnotherToolBtn.SetActive(true);
         RotateBtn.SetActive(true);
         CurrentToolText.GetComponent<Text>().text = text + PlusText + magneticText;
