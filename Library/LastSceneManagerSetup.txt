@@ -1,5 +1,5 @@
 sceneSetups:
-- path: Assets/Scenes/Electric.unity
+- path: Assets/Scenes 1/Models.unity
   isLoaded: 1
   isActive: 1
   isSubScene: 0
