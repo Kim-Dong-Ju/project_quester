@@ -125,6 +125,11 @@ public class CrookesMagnetic : MonoBehaviour
         BezierPoint.GetComponent<BezierPointController>().DeleteMagnetic();
     }
 
+    public bool GetIsConneted()
+    {
+        return (bPConnect && bMConnect);
+    }
+
     private void OnTriggerEnter(Collider collider)
     {
         if(collider.gameObject.TryGetComponent<RedEndPin>(out RedEndPin redEndPin))

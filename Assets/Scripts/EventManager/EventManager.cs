@@ -5,14 +5,13 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using TMPro;
+using System.IO;
 
 public class EventManager : MonoBehaviour
 {
     private string text, crossText, wheelText, magneticText, electrolysisText, PlusText;
-    private string stepOne, stepTwo, stepThree, stepFour;
-    // step마다 할 도움말 Title
-    private string detailOne, detailTwo, detailThree, detailFour;
-    // step마다 할 도움말 Detail
+    private string[] stepText, detailText, detailBold;
+    // step마다 할 도움말 Title, step마다 할 도움말 Detail
     public GameObject PowerSupply;
     public GameObject CrookesMagnetic;
     public GameObject CrookesCross;
@@ -20,19 +19,20 @@ public class EventManager : MonoBehaviour
     public GameObject PlusWireEnd;
     public GameObject MinusWireEnd;
     public GameObject Magnetic;
-    public GameObject SelectPanel, RotateBtn, AnotherToolBtn, CurrentToolText, Header, HelpPopup, HelpBtn, BackBtn, RestartBtn; // UI prefab들을 담을 변수들
+    public GameObject SelectPanel, RotateBtn, AnotherToolBtn, CurrentToolText, Header, HelpPopup, HelpBtn, BackBtn, RestartBtn, HelpText, HelpDetailBold, HelpDetail, HelpImg; // UI prefab들을 담을 변수들
     public GameObject mainUI; // Canvas
     public Sprite BackImgWhite, ReStartImgWhite; // Images
     private Sprite BackImg, RestartImg;
+    public Sprite[] HelpImages = new Sprite[9];
     Vector2 HelpBtnOriginPos, HelpBtnNewPos;
     GameObject crookesCrossIns, crookeswheelIns, crookesMagIns, magneticIns, plusWireIns, minusWireIns;
 
     // 이벤트 제어용 boolean 변수들 선언
-    private bool PSWireFinish = false, ToolWireFinish = false;
+    private bool PSWireFinish = false, SubBtn = false;
     // 전원 장치에 전선을 꽂았는 지, 도구에 전선을 꽂았는 지
     private bool MagneticSelect = false, CrossSelect = false, WheelSelect = false; // 버튼을 통해 어느 것을 선택했는지 Check용
     private int count = 0, CrookesMagCount = 0, CrookesCrossCount = 0, CrookesWheelCount = 0;
-
+    private int idx = 0, curIdx = 0, imgIdx = 0;
     void Start()
     {
         Debug.Log(CurrentToolText.GetComponent<TMP_Text>().text);
@@ -50,108 +50,165 @@ public class EventManager : MonoBehaviour
         magneticText = "<b>크룩스관 슬릿입</b>";
         electrolysisText = "<b>전기분해 장치</b>";
         PlusText = "<b> | </b>";
-        stepOne = "<b></b>";
+        stepText = new string[8];
+        detailBold = new string[8];
+        detailText = new string[8];
+        help();
     }
 
     void LateUpdate()
     {
-        // if(Restart)
-        // {
-        //     SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
-        // }   
+        if(Input.GetKey(KeyCode.Escape))
+        {
+            SceneManager.LoadScene("Learn");
+        }  
         PSWireFinish = PowerSupply.GetComponent<PowerSupply>().GetAllWireConnected();
 
-        if(PSWireFinish && count == 0) // 만약 모든 전선이 연결 되었으면 실행
+        if(PSWireFinish) // 만약 모든 전선이 연결 되었으면 실행
         {
-            // GameObject child = Instantiate(SelectPanel);
-            // RectTransform childRt = child.GetComponent<RectTransform>();
-            // RectTransform originRt = SelectPanel.GetComponent<RectTransform>();
+            if(count == 0)
+            {
+                count++; // 계속 생성되는거 방지용
+                SelectWidget();
+            }
+            HelpImg.GetComponent<Image>().sprite = HelpImages[imgIdx];
+            HelpText.GetComponent<TMP_Text>().text = stepText[curIdx];
+            HelpDetailBold.GetComponent<TMP_Text>().text = detailBold[curIdx];
+            HelpDetail.GetComponent<TMP_Text>().text = detailText[curIdx];
 
-            // child.transform.SetParent(mainUI.transform); // 선택 판넬 생성
-            
-            // childRt.anchoredPosition3D = originRt.anchoredPosition3D;
-            // childRt.SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, originRt.rect.width);
-            // childRt.SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, originRt.rect.height);
-            // childRt.localScale = Vector3.one;
-            // childRt.localRotation = Quaternion.identity;
-            // childRt.sizeDelta = Vector2.zero;
-            count++; // 계속 생성되는거 방지용
-            SelectWidget();
-            // Header.GetComponent<Image>().color = new Color(0f, 1f, 0.8980392f, 1f);
-            // CurrentToolText.GetComponent<Text>().color = Color.white;
-            // SelectPanel.SetActive(true);
-            // // UI 출력
-            // Debug.Log(count);
+            if(CheckToolWire())
+            {
+                if(CheckDial())
+                {
+                    if(SubBtn)
+                    {
+                        if(CheckMain())
+                        {
+                            Crookes();
+                        }
+                        else
+                        {
+                            imgIdx = 6;
+                            curIdx = 4;
+                        }
+                    }
+                    else
+                    {
+                        imgIdx = 5;
+                        curIdx = 3;
+                        CheckSubBtn();
+                    }
+                }
+                else
+                {
+                    imgIdx = 4;
+                    curIdx = 2;
+                }
+            }
         }
+    }
 
+    public void help()
+    {
+        StreamReader sr = new StreamReader(Application.dataPath + "/Resources/" + "Help.csv");
 
-        // if(MagneticSelect) // 크룩스 슬릿입을 선택했을 경우
-        // {
-        //     // 크룩스 슬릿입 생성
-        //     Instantiate(CrookesMagnetic, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesMagnetic.transform.localEulerAngles));
-        //     Instantiate(Magnetic, new Vector3(0, 0, 0), Quaternion.identity);
-        //     Instantiate(MinusWireEnd, new Vector3(0.85f, 0.51f, 0.35f), Quaternion.identity);
-        //     Instantiate(PlusWireEnd, new Vector3(0.79f, 0.51f, 0.35f), Quaternion.identity);
+        int i = 0;
+        bool eof = false;
+        while(!eof)
+        {
+            string dataString = sr.ReadLine();
+            if(dataString == null)
+            {
+                eof = true;
+                break;
+            }
+            var data_value = dataString.Split(',');
 
-        //     MagneticSelect = false; // 중복 생성 등 방지용으로 false로 초기화
-        //     CrookesMagCount++;
-        // }
+            if(i == 0)
+            {
+                stepText[idx] =  HelpText.GetComponent<TMP_Text>().text;
+                detailBold[idx] = HelpDetailBold.GetComponent<TMP_Text>().text;
+                detailText[idx] = HelpDetail.GetComponent<TMP_Text>().text;
+            }
 
-        // if(CrossSelect) // 크룩스 십자입을 선택했을 경우
-        // {
-        //     // 크룩스 슬릿입 생성
-        //     Instantiate(CrookesCross, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesCross.transform.localEulerAngles));
-        //     Instantiate(MinusWireEnd, new Vector3(0.85f, 0.51f, 0.35f), Quaternion.identity);
-        //     Instantiate(PlusWireEnd, new Vector3(0.79f, 0.51f, 0.35f), Quaternion.identity);
+            stepText[idx] = data_value[1].ToString();
+            detailBold[idx] = data_value[2].ToString();
+            detailText[idx++] = data_value[3].ToString();
+        }
+    }
 
-        //     CrossSelect = false; // 중복 방지를 위해 초기화
-        //     CrookesCrossCount++;
-        // }
+    public bool CheckToolWire()
+    {
+        bool ToolWireFinish = false;
+        // 유저가 크룩스관을 생성했는지 체크
+        if(CrookesMagCount > 0)
+        {
+            ToolWireFinish = crookesMagIns.GetComponent<CrookesMagnetic>().GetIsConneted();
+        }
+        else if(CrookesCrossCount > 0)
+        {
+            ToolWireFinish = crookesCrossIns.GetComponent<CrookesCross>().GetIsConnected();
+        }
+        else if(CrookesWheelCount > 0)
+        {
+            ToolWireFinish = crookeswheelIns.GetComponent<CrookesPaddle>().GetIsConnected();
+        }
+        
+        return ToolWireFinish;
+    }
 
-        // if(WheelSelect) // 크룩스 회전차입을 선택했을 경우
-        // {
-        //     // 크룩스 슬릿입 생성
-        //     Instantiate(CrookesWheel, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesWheel.transform.localEulerAngles));
-        //     Instantiate(MinusWireEnd, new Vector3(0.85f, 0.51f, 0.35f), Quaternion.identity);
-        //     Instantiate(PlusWireEnd, new Vector3(0.79f, 0.51f, 0.35f), Quaternion.identity);
+    public void CheckSubBtn()
+    {
+        if(SubBtn) return;
+        else
+        {
+            bool powered = PowerSupply.GetComponent<PowerSupply>().GetIsPowered();
+            bool mainOn = PowerSupply.GetComponent<PowerSupply>().GetIsMainOn();
+            if(powered && !mainOn) SubBtn = true;
+        }
+    }
 
-        //     WheelSelect = false; // 중복 방지를 위해 초기화
-        //     CrookesWheelCount++;
-        // }
+    public bool CheckMain()
+    {
+        bool powered = PowerSupply.GetComponent<PowerSupply>().GetIsPowered();
+        bool mainOn = PowerSupply.GetComponent<PowerSupply>().GetIsMainOn();
+        return (powered && mainOn);
+    }
 
-        // if(OtherTool) // 다른 도구 실험하기를 눌렀을 경우
-        // {
-        //     if(CrookesCrossCount > 0) // 이전에 이미 크룩스 십자입을 생성했을 경우
-        //     {
-        //         Destroy(CrookesCross);
-        //         Destroy(PlusWireEnd);
-        //         Destroy(MinusWireEnd);
-        //     }
+    public bool CheckDial()
+    {
+        float Ampere = PowerSupply.GetComponent<PowerSupply>().GetAmpere();
+        if(Ampere > 0)
+        {
+            return true;
+        }
+        return false;
+    }
 
-        //     if(CrookesWheelCount > 0) // 이전에 이미 크룩스 회전차입을 생성했을 경우
-        //     {
-        //         Destroy(CrookesWheel);
-        //         Destroy(PlusWireEnd);
-        //         Destroy(MinusWireEnd);
-        //     }
-
-        //     if(CrookesMagCount > 0) // 이전에 이미 크룩스 슬릿입을 생성했을 경우
-        //     {
-        //         Destroy(CrookesMagnetic);
-        //         Destroy(Magnetic);
-        //         Destroy(PlusWireEnd);
-        //         Destroy(MinusWireEnd);
-        //     }
-
-        //     count = 0;
-        // }
+    void Crookes()
+    {
+        if(CrookesCrossCount > 0)
+        {
+            imgIdx = 7;
+            curIdx = 5;
+        }
+        else if(CrookesMagCount > 0)
+        {
+            imgIdx = 8;
+            curIdx = 6;
+        }
+        else if(CrookesWheelCount > 0)
+        {
+            imgIdx = 7;
+            curIdx = 7;
+        }
     }
 
     public void SelectWidget() // 조건을 만족했을 때 생성시킬 UI
     {
         HelpBtn.SetActive(false);
         StartCoroutine(Widget());
-    }   
+    }
 
     IEnumerator Widget()
     {
@@ -179,13 +236,14 @@ public class EventManager : MonoBehaviour
 
     public void BackButton() // 뒤로가기 버튼을 눌렀을 경우
     {
-        SceneManager.LoadScene(0);
+        SceneManager.LoadScene("Learn");
     }
 
     public void OtherToolButton() // 다른 도구 공부하기 선택했을 경우의 이벤트
     {
         if(CrookesCrossCount > 0) // 이전에 이미 크룩스 십자입을 생성했을 경우
         {
+            CrookesCrossCount = 0;
             Destroy(crookesCrossIns);
             Destroy(plusWireIns);
             Destroy(minusWireIns);
@@ -193,6 +251,7 @@ public class EventManager : MonoBehaviour
 
         if(CrookesWheelCount > 0) // 이전에 이미 크룩스 회전차입을 생성했을 경우
         {
+            CrookesWheelCount = 0;
             Destroy(crookeswheelIns);
             Destroy(plusWireIns);
             Destroy(minusWireIns);
@@ -200,6 +259,7 @@ public class EventManager : MonoBehaviour
 
         if(CrookesMagCount > 0) // 이전에 이미 크룩스 슬릿입을 생성했을 경우
         {
+            CrookesMagCount = 0;
             Destroy(crookesMagIns);
             Destroy(magneticIns);
             Destroy(plusWireIns);
@@ -211,6 +271,7 @@ public class EventManager : MonoBehaviour
         AnotherToolBtn.SetActive(false); // 창에 띄워진 것도 제거
 
         CurrentToolText.GetComponent<TMP_Text>().text = text;
+        curIdx = 0;
         count = 0;
     }
 
@@ -219,10 +280,15 @@ public class EventManager : MonoBehaviour
         // 현재 창에 띄워진 선택창 제거
         // Destroy(SelectPanel);
         SelectPanel.SetActive(false);
+        imgIdx = 2;
         Header.GetComponent<Image>().color = Color.white;
         BackBtn.GetComponent<Image>().sprite = BackImg;
         RestartBtn.GetComponent<Image>().sprite = RestartImg;
         CurrentToolText.GetComponent<TMP_Text>().color = Color.black;
+        HelpImg.GetComponent<Image>().sprite = HelpImages[imgIdx];
+        HelpText.GetComponent<TMP_Text>().text = stepText[curIdx];
+        HelpDetailBold.GetComponent<TMP_Text>().text = detailBold[curIdx];
+        HelpDetail.GetComponent<TMP_Text>().text = detailText[curIdx++];
 
         // 크룩스 슬릿입 생성
         crookesMagIns = Instantiate(CrookesMagnetic, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesMagnetic.transform.localEulerAngles));
@@ -247,10 +313,15 @@ public class EventManager : MonoBehaviour
         // 현재 창에 띄워진 선택창 제거
         // Destroy(SelectPanel);
         SelectPanel.SetActive(false);
+        imgIdx = 1;
         Header.GetComponent<Image>().color = Color.white;
         BackBtn.GetComponent<Image>().sprite = BackImg;
         RestartBtn.GetComponent<Image>().sprite = RestartImg;
         CurrentToolText.GetComponent<TMP_Text>().color = Color.black;
+        HelpImg.GetComponent<Image>().sprite = HelpImages[imgIdx];
+        HelpText.GetComponent<TMP_Text>().text = stepText[curIdx];
+        HelpDetailBold.GetComponent<TMP_Text>().text = detailBold[curIdx];
+        HelpDetail.GetComponent<TMP_Text>().text = detailText[curIdx++];
 
         // 크룩스 십자입 생성
         crookesCrossIns = Instantiate(CrookesCross, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesCross.transform.localEulerAngles));
@@ -274,10 +345,15 @@ public class EventManager : MonoBehaviour
         // 현재 창에 띄워진 선택창 제거
         // Destroy(SelectPanel);
         SelectPanel.SetActive(false);
+        imgIdx = 3;
         Header.GetComponent<Image>().color = Color.white;
         BackBtn.GetComponent<Image>().sprite = BackImg;
         RestartBtn.GetComponent<Image>().sprite = RestartImg;
         CurrentToolText.GetComponent<TMP_Text>().color = Color.black;
+        HelpImg.GetComponent<Image>().sprite = HelpImages[imgIdx];
+        HelpText.GetComponent<TMP_Text>().text = stepText[curIdx];
+        HelpDetailBold.GetComponent<TMP_Text>().text = detailBold[curIdx];
+        HelpDetail.GetComponent<TMP_Text>().text = detailText[curIdx++];
 
         // 크룩스 회전차입 생성
         crookeswheelIns = Instantiate(CrookesWheel, new Vector3(1.11f, 0.51f, 0.42f), Quaternion.Euler(CrookesWheel.transform.localEulerAngles));

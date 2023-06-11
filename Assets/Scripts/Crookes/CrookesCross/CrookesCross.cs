@@ -79,6 +79,11 @@ public class CrookesCross : MonoBehaviour
         Ampere = fAmphere;
     }
 
+    public bool GetIsConnected()
+    {
+        return (bPConnect && bMConnect);
+    }
+
     private void OnTriggerEnter(Collider collider)
     {
         if(collider.gameObject.TryGetComponent<RedEndPin>(out RedEndPin redEndPin))
