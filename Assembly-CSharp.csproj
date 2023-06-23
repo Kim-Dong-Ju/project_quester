@@ -38,9 +38,11 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\Pins\RedStartPin.cs" />
      <Compile Include="Assets\Scripts\Pins\BlackEndPin.cs" />
+     <Compile Include="Assets\Scripts\EventManager\MainSceneManager.cs" />
      <Compile Include="Assets\Scripts\PowerSupply\OnOffMain.cs" />
      <Compile Include="Assets\Scripts\PowerSupply\AmpereWheel.cs" />
      <Compile Include="Assets\Scripts\Crookes\CrookesCross\CrookesCross.cs" />
+     <Compile Include="Assets\Scripts\EventManager\LearnManager.cs" />
      <Compile Include="Assets\Scripts\Crookes\CrookesMagnetic\BezierPointController.cs" />
      <Compile Include="Assets\Scripts\Pins\RedEndPin.cs" />
      <Compile Include="Assets\Scripts\Crookes\CrookesPaddleWheel\CrookesPaddle.cs" />
@@ -60,8 +62,6 @@
      <Compile Include="Assets\Scripts\PowerSupply\PowerSupply.cs" />
      <Compile Include="Assets\Scripts\Magnetic\Magnetic.cs" />
      <Compile Include="Assets\Scripts\Crookes\CrookesPaddleWheel\CrookesWheel.cs" />
-     <Compile Include="Assets\Scripts\EventManager\MainSceneManager.cs" />
-     <Compile Include="Assets\Scripts\EventManager\LearnManager.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
