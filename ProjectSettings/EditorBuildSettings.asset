@@ -4,5 +4,26 @@
 EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
-  m_Scenes: []
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/Main.unity
+    guid: 9fc0d4010bbf28b4594072e72b8655ab
+  - enabled: 1
+    path: Assets/Scenes/Learn.unity
+    guid: 6e6cee9ecf6f26348898ff408a7d5529
+  - enabled: 1
+    path: Assets/Scenes/PowerSupply.unity
+    guid: 440468879b46ae942bab9b78d9761d83
+  - enabled: 1
+    path: Assets/Scenes/Electric.unity
+    guid: 221c16cc7043e4d2f919ac473f0719c8
+  - enabled: 1
+    path: Assets/Scenes/Burette.unity
+    guid: 0b7583f680c7fca459098fd47abe7e2f
+  - enabled: 1
+    path: Assets/Scenes/Flask.unity
+    guid: 1a0acfab8f1e5fc4dbac9832fd28711b
+  - enabled: 1
+    path: Assets/Scenes/Stirrer.unity
+    guid: d4350e6e54f1f8242ab1db29ca50ad70
   m_configObjects: {}
